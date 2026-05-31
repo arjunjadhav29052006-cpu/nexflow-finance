@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexflow — Financial OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-mark">NX</span>
+      <span class="logo-text">FINANCE OS</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" data-view="log">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Log Payment
+      </button>
+      <button class="nav-btn" data-view="buckets">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Buckets
+      </button>
+      <button class="nav-btn" data-view="history">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History
+      </button>
+      <button class="nav-btn" data-view="rules">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Hard Rules
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="client-counter">
+        <span class="cc-num" id="sidebar-clients">0</span>
+        <span class="cc-label">paying clients</span>
+      </div>
+      <div class="arr-display">
+        <span class="arr-label">ARR</span>
+        <span class="arr-val" id="sidebar-arr">₹0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+
+    <!-- MOBILE HEADER -->
+    <header class="mobile-header">
+      <button class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="mobile-logo">NX FINANCE</span>
+    </header>
+
+    <!-- ── DASHBOARD VIEW ── -->
+    <section class="view active" id="view-dashboard">
+      <div class="view-header">
+        <h1 class="view-title">Dashboard</h1>
+        <span class="view-sub" id="dash-date"></span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card accent">
+          <div class="stat-label">Total ARR</div>
+          <div class="stat-val" id="dash-arr">₹0</div>
+          <div class="stat-sub">annual recurring revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Monthly Notional</div>
+          <div class="stat-val" id="dash-monthly">₹0</div>
+          <div class="stat-sub">ARR ÷ 12</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Paying Clients</div>
+          <div class="stat-val" id="dash-clients">0</div>
+          <div class="stat-sub">active contracts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Op. Margin</div>
+          <div class="stat-val" id="dash-margin">—</div>
+          <div class="stat-sub">after ₹3K/mo infra</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- Bucket Bars -->
+        <div class="panel" id="panel-buckets-summary">
+          <div class="panel-header">
+            <span class="panel-title">Bucket Allocation</span>
+            <span class="panel-sub">of latest payment</span>
+          </div>
+          <div id="bucket-bars"></div>
+          <div class="no-data-msg" id="bucket-bars-empty">Log a payment to see allocations.</div>
+        </div>
+
+        <!-- Verdict -->
+        <div class="panel verdict-panel" id="verdict-panel">
+          <div class="panel-title">Verdict</div>
+          <div class="verdict-text" id="verdict-text">Log your first payment to get a financial verdict.</div>
+          <div class="verdict-stage" id="verdict-stage"></div>
+        </div>
+      </div>
+
+      <!-- Growth phases -->
+      <div class="panel phases-panel">
+        <div class="panel-header">
+          <span class="panel-title">Growth Phases</span>
+          <span class="panel-sub">your ₹925Cr roadmap</span>
+        </div>
+        <div class="phases-track" id="phases-track">
+          <div class="phase-item" data-phase="0">
+            <div class="phase-dot"></div>
+            <div class="phase-body">
+              <div class="phase-label">Right now</div>
+              <div class="phase-name">Close clients 2–5</div>
+              <div class="phase-detail">CA referral · printed one-pager · demo video. Product works. Pipeline is the only bottleneck.</div>
+              <div class="phase-target">Target: 5 paying in 90 days</div>
+            </div>
+          </div>
+          <div class="phase-item" data-phase="1">
+            <div class="phase-dot"></div>
+            <div class="phase-body">
+              <div class="phase-label">Phase 1 · Yrs 1–2</div>
+              <div class="phase-name">MIDC Satara dominance</div>
+              <div class="phase-detail">Inventory + Shift Tracker bundle. Silver ₹24K / Gold ₹48K tiers. 30–50 clients.</div>
+              <div class="phase-target">Target: ₹25L ARR</div>
+            </div>
+          </div>
+          <div class="phase-item" data-phase="2">
+            <div class="phase-dot"></div>
+            <div class="phase-body">
+              <div class="phase-label">Phase 2 · Yrs 3–5</div>
+              <div class="phase-name">Multi-MIDC self-serve OS</div>
+              <div class="phase-detail">Pune · Nashik · Aurangabad. Modular subscriptions. Compliance Tracker add-on. First sales hire.</div>
+              <div class="phase-target">Target: ₹2Cr ARR</div>
+            </div>
+          </div>
+          <div class="phase-item" data-phase="3">
+            <div class="phase-dot"></div>
+            <div class="phase-body">
+              <div class="phase-label">Phase 3 · Yrs 6–10</div>
+              <div class="phase-name">UK & global arbitrage</div>
+              <div class="phase-detail">Same product. £1,000–1,500/mo pricing. $10M ARR triggers 10–15x PE multiple.</div>
+              <div class="phase-target">Target: ₹925Cr exit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LOG PAYMENT VIEW ── -->
+    <section class="view" id="view-log">
+      <div class="view-header">
+        <h1 class="view-title">Log Payment</h1>
+        <span class="view-sub">Every rupee allocated on day of receipt</span>
+      </div>
+
+      <div class="log-grid">
+        <div class="panel">
+          <div class="panel-title" style="margin-bottom:1.5rem">Payment details</div>
+
+          <div class="field-group">
+            <label class="field-label">Client name</label>
+            <input type="text" class="field-input" id="log-client" placeholder="e.g. S.S. Engineering" />
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Annual contract value (₹)</label>
+              <input type="number" class="field-input" id="log-acv" placeholder="75000" min="0" oninput="previewAllocation()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Setup fee (₹)</label>
+              <input type="number" class="field-input" id="log-setup" placeholder="5000" min="0" oninput="previewAllocation()" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Payment date</label>
+              <input type="date" class="field-input" id="log-date" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Contract type</label>
+              <select class="field-input" id="log-type">
+                <option value="new">New client</option>
+                <option value="renewal">Renewal</option>
+                <option value="upgrade">Upgrade</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Notes (optional)</label>
+            <input type="text" class="field-input" id="log-notes" placeholder="e.g. CA referral via father" />
+          </div>
+
+          <button class="btn-primary" id="log-btn" onclick="logPayment()">Allocate & Log Payment</button>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="panel" id="log-preview">
+          <div class="panel-title" style="margin-bottom:1.5rem">Allocation preview</div>
+          <div id="preview-empty" class="no-data-msg">Enter ACV above to preview allocation.</div>
+          <div id="preview-content" style="display:none">
+            <div class="preview-total" id="preview-total"></div>
+            <div id="preview-rows"></div>
+            <div class="preview-rule">
+              <svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Setup fee goes entirely to reinvestment — not split.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BUCKETS VIEW ── -->
+    <section class="view" id="view-buckets">
+      <div class="view-header">
+        <h1 class="view-title">Buckets</h1>
+        <span class="view-sub">Cumulative totals across all payments</span>
+      </div>
+      <div class="buckets-grid" id="buckets-detail"></div>
+    </section>
+
+    <!-- ── HISTORY VIEW ── -->
+    <section class="view" id="view-history">
+      <div class="view-header">
+        <h1 class="view-title">Payment History</h1>
+        <span class="view-sub" id="history-sub">No payments logged yet.</span>
+      </div>
+      <div class="panel" id="history-panel">
+        <div class="no-data-msg" id="history-empty">No payments logged yet. Go to Log Payment to add your first.</div>
+        <div id="history-list"></div>
+      </div>
+    </section>
+
+    <!-- ── HARD RULES VIEW ── -->
+    <section class="view" id="view-rules">
+      <div class="view-header">
+        <h1 class="view-title">Hard Rules</h1>
+        <span class="view-sub">Non-negotiable. No exceptions.</span>
+      </div>
+      <div class="rules-list">
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#fee2e2;color:#dc2626">
+            <svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Tax bucket is frozen on day 1</div>
+            <div class="rule-desc">The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (March · June · September · December) means penalties and interest. Non-negotiable.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#fef3c7;color:#d97706">
+            <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Infra bucket is on autopay</div>
+            <div class="rule-desc">Supabase Pro + Vercel set on standing autopay the day payment arrives. Zero decision-making. 50 clients depend on uptime. One missed payment = trust destroyed.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#dcfce7;color:#16a34a">
+            <svg viewBox="0 0 24 24" width="20" height="20"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Reinvestment needs a plan before you spend it</div>
+            <div class="rule-desc">Decide what you're buying with reinvestment before the payment even lands. Unplanned reinvestment is lifestyle inflation in disguise. CA referral fee, one-pager, demo. That's the entire list pre-5 clients.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#dbeafe;color:#2563eb">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Emergency fund hard cap: ₹50,000</div>
+            <div class="rule-desc">Once hit, stop allocating to it. Redirect that 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#ede9fe;color:#7c3aed">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Personal bucket scales at milestones only</div>
+            <div class="rule-desc">1–4 clients → 15% ceiling. 5–9 clients → raise to 18%. 10+ clients → 20% max. You're building a ₹925Cr exit, not a salary. Every extra rupee you take personally is a rupee that doesn't compound.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#fce7f3;color:#db2777">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">No borrowing between buckets. Ever.</div>
+            <div class="rule-desc">If infra bucket runs short, that's a pricing problem — raise your ACV. Do not touch tax, emergency, or reinvestment to cover ops. Each bucket is a separate account mentally, ideally physically.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#f0fdf4;color:#15803d">
+            <svg viewBox="0 0 24 24" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Setup fee → reinvestment only</div>
+            <div class="rule-desc">Setup fees are one-time capital, not recurring revenue. They don't belong in the percentage-split buckets. 100% goes to reinvestment and is spent on a pre-decided milestone.</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon" style="background:#fff7ed;color:#ea580c">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="rule-body">
+            <div class="rule-title">Extract via director salary, not dividends</div>
+            <div class="rule-desc">Director remuneration is a business expense that reduces taxable corporate income. Dividends face double taxation. Once Pvt Ltd is registered, all personal extraction goes through salary entries only.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
