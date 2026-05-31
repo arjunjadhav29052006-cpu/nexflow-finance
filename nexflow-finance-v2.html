@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nexflow — Financial OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--bg1:#111;--bg2:#1a1a1a;--bg3:#222;
+  --border:#2a2a2a;--border2:#333;
+  --text:#f0f0f0;--text2:#888;--text3:#555;
+  --accent:#c8f135;--accent2:#a8d020;
+  --red:#ff4444;--amber:#f59e0b;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--pink:#ec4899;
+  --fh:'Syne',system-ui,sans-serif;--fm:'JetBrains Mono',monospace;
+  --sw:220px;--r:8px;--rl:14px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);font-size:14px;line-height:1.5;overflow-x:hidden}
+body{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.s-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-mark{background:var(--accent);color:#000;font-family:var(--fm);font-weight:700;font-size:12px;letter-spacing:.05em;padding:5px 8px;border-radius:4px}
+.logo-text{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.15em}
+.s-nav{flex:1;padding:1rem .75rem;display:flex;flex-direction:column;gap:2px}
+.nb{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:var(--text2);font-family:var(--fh);font-size:13px;font-weight:500;padding:9px 12px;border-radius:var(--r);cursor:pointer;transition:all .15s;text-align:left;letter-spacing:.02em}
+.nb svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nb:hover{background:var(--bg2);color:var(--text)}
+.nb.active{background:var(--accent);color:#000;font-weight:700}
+.nb.active svg{stroke:#000}
+.s-foot{padding:1.25rem 1.5rem;border-top:1px solid var(--border)}
+.cc{display:flex;align-items:baseline;gap:6px;margin-bottom:8px}
+.cc-n{font-family:var(--fm);font-size:28px;font-weight:600;color:var(--accent);line-height:1}
+.cc-l{font-size:11px;color:var(--text3);font-weight:500;letter-spacing:.03em}
+.arr-row{display:flex;justify-content:space-between;align-items:center}
+.arr-l{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:.1em}
+.arr-v{font-family:var(--fm);font-size:14px;font-weight:600;color:var(--text2)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.mob-hdr{display:none;align-items:center;gap:12px;padding:1rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg1);position:sticky;top:0;z-index:50}
+.ham{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:2px}
+.ham span{display:block;width:20px;height:2px;background:var(--text);border-radius:2px}
+.mob-logo{font-family:var(--fm);font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--text2)}
+
+/* VIEWS */
+.view{display:none;padding:2.5rem;flex:1;animation:fi .2s ease}
+.view.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.vh{margin-bottom:2rem;display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.vt{font-family:var(--fh);font-size:28px;font-weight:800;color:var(--text);letter-spacing:-.02em}
+.vs{font-family:var(--fm);font-size:11px;color:var(--text3);letter-spacing:.04em}
+
+/* PANELS */
+.panel{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem}
+.ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:6px}
+.pt{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.05em;text-transform:uppercase}
+.ps{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:.06em}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem}
+.sc{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;transition:border-color .2s}
+.sc.ac{background:var(--accent);border-color:var(--accent)}
+.sc.ac .sl,.sc.ac .ss{color:rgba(0,0,0,.5)}
+.sc.ac .sv{color:#000}
+.sl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.sv{font-family:var(--fm);font-size:22px;font-weight:600;color:var(--text);line-height:1;margin-bottom:4px}
+.ss{font-size:11px;color:var(--text3)}
+
+/* DASH GRID */
+.dg{display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+
+/* BUCKET BARS */
+.bbr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bbr:last-child{margin-bottom:0}
+.bbl{font-size:12px;font-weight:600;color:var(--text2);min-width:130px}
+.bbt{flex:1;height:6px;background:var(--bg3);border-radius:999px;overflow:hidden}
+.bbf{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1);width:0}
+.bba{font-family:var(--fm);font-size:11px;color:var(--text2);min-width:75px;text-align:right}
+
+/* VERDICT */
+.vp{display:flex;flex-direction:column;justify-content:space-between;border-left:3px solid var(--accent)}
+.vtxt{font-size:13px;line-height:1.7;color:var(--text2);flex:1;padding:.5rem 0}
+.vstg{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:.04em;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+/* PHASES */
+.pht{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
+.pht::before{content:'';position:absolute;top:9px;left:10px;right:10px;height:1px;background:var(--border2);z-index:0}
+.phi{position:relative}
+.phd{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);background:var(--bg);margin-bottom:12px;position:relative;z-index:1;transition:all .3s}
+.phl{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:.06em;margin-bottom:4px}
+.phn{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-.01em}
+.phdt{font-size:11px;color:var(--text3);line-height:1.55;margin-bottom:8px}
+.phtg{font-family:var(--fm);font-size:10px;color:var(--accent2);letter-spacing:.03em}
+
+/* LOG FORM */
+.lg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.fg{margin-bottom:1rem}
+.fl{display:block;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.fi{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--fh);font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.fi:focus{border-color:var(--accent)}
+.fi::placeholder{color:var(--text3)}
+.fi option{background:var(--bg2)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-p{width:100%;background:var(--accent);color:#000;font-family:var(--fh);font-size:14px;font-weight:700;letter-spacing:.02em;padding:12px 24px;border:none;border-radius:var(--r);cursor:pointer;margin-top:.5rem;transition:all .15s}
+.btn-p:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-p:active{transform:translateY(0)}
+.ptot{font-family:var(--fm);font-size:20px;font-weight:600;color:var(--accent);margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.prw{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.prw:last-of-type{border-bottom:none}
+.prl{display:flex;align-items:center;gap:10px}
+.prd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.prn{font-size:13px;font-weight:600;color:var(--text)}
+.prp{font-size:11px;color:var(--text3);margin-top:1px}
+.pra{font-family:var(--fm);font-size:13px;font-weight:600}
+.prule{margin-top:1rem;padding:8px 12px;background:var(--bg2);border-radius:var(--r);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px}
+.prule svg{stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;width:14px;height:14px}
+
+/* BUCKETS */
+.bkg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.bkc{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;position:relative;overflow:hidden;transition:border-color .2s}
+.bkc:hover{border-color:var(--border2)}
+.bktop{position:absolute;top:0;left:0;right:0;height:3px}
+.bkl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.bkv{font-family:var(--fm);font-size:24px;font-weight:600;color:var(--text);line-height:1;margin-bottom:4px}
+.bkp{font-family:var(--fm);font-size:11px;color:var(--text3);margin-bottom:12px}
+.bkd{font-size:12px;color:var(--text3);line-height:1.55;border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+.bkcap{font-family:var(--fm);font-size:10px;margin-top:8px;padding:4px 8px;border-radius:4px;display:inline-block}
+
+/* HISTORY */
+.hi{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+.hi:last-child{border-bottom:none}
+.hit{font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:.06em;padding:3px 8px;border-radius:4px;text-transform:uppercase;flex-shrink:0}
+.hit.new{background:rgba(200,241,53,.15);color:var(--accent)}
+.hit.renewal{background:rgba(59,130,246,.15);color:var(--blue)}
+.hit.upgrade{background:rgba(168,85,247,.15);color:var(--purple)}
+.hic{font-size:14px;font-weight:700;color:var(--text);flex:1}
+.hid{font-family:var(--fm);font-size:11px;color:var(--text3)}
+.hia{font-family:var(--fm);font-size:14px;font-weight:600;color:var(--accent)}
+.hdel{background:none;border:1px solid var(--border);color:var(--text3);border-radius:4px;font-size:11px;padding:3px 8px;cursor:pointer;font-family:var(--fm);transition:all .15s}
+.hdel:hover{border-color:var(--red);color:var(--red)}
+
+/* RULES */
+.rl{display:flex;flex-direction:column;gap:10px}
+.rc{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color .2s}
+.rc:hover{border-color:var(--border2)}
+.ri{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ri svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:20px;height:20px}
+.rtt{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.01em}
+.rtd{font-size:12px;color:var(--text3);line-height:1.65}
+
+/* MISC */
+.ndm{font-size:13px;color:var(--text3);padding:1rem 0;text-align:center}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:#000;font-family:var(--fh);font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--r);opacity:0;transform:translateY(8px);transition:all .25s ease;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+.divider{height:1px;background:var(--border);margin:10px 0}
+.sl-label{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin:1.25rem 0 .65rem}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.sg{grid-template-columns:repeat(2,1fr)}.bkg{grid-template-columns:repeat(2,1fr)}.pht{grid-template-columns:repeat(2,1fr)}.pht::before{display:none}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(calc(-1 * var(--sw)))}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.5)}
+  .main{margin-left:0}
+  .mob-hdr{display:flex}
+  .view{padding:1.5rem 1.25rem}
+  .dg{grid-template-columns:1fr}
+  .lg{grid-template-columns:1fr}
+  .sg{grid-template-columns:1fr 1fr}
+  .bkg{grid-template-columns:1fr}
+  .pht{grid-template-columns:1fr}
+  .pht::before{display:none}
+  .fr{grid-template-columns:1fr}
+  .vt{font-size:22px}
+}
+@media(max-width:480px){.sg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <span class="logo-mark">NX</span>
+    <span class="logo-text">FINANCE OS</span>
+  </div>
+  <nav class="s-nav">
+    <button class="nb active" data-view="dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nb" data-view="log">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Log Payment
+    </button>
+    <button class="nb" data-view="buckets">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Buckets
+    </button>
+    <button class="nb" data-view="history">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      History
+    </button>
+    <button class="nb" data-view="rules">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Hard Rules
+    </button>
+  </nav>
+  <div class="s-foot">
+    <div class="cc">
+      <span class="cc-n" id="sb-clients">0</span>
+      <span class="cc-l">paying clients</span>
+    </div>
+    <div class="arr-row">
+      <span class="arr-l">ARR</span>
+      <span class="arr-v" id="sb-arr">₹0</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="mob-hdr">
+    <button class="ham" id="ham"><span></span><span></span><span></span></button>
+    <span class="mob-logo">NX FINANCE OS</span>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="vh">
+      <h1 class="vt">Dashboard</h1>
+      <span class="vs" id="dash-date"></span>
+    </div>
+    <div class="sg">
+      <div class="sc ac"><div class="sl">Total ARR</div><div class="sv" id="d-arr">₹0</div><div class="ss">annual recurring revenue</div></div>
+      <div class="sc"><div class="sl">Monthly Notional</div><div class="sv" id="d-mo">₹0</div><div class="ss">ARR ÷ 12</div></div>
+      <div class="sc"><div class="sl">Paying Clients</div><div class="sv" id="d-cl">0</div><div class="ss">active contracts</div></div>
+      <div class="sc"><div class="sl">Op. Margin</div><div class="sv" id="d-mg">—</div><div class="ss">after ₹3K/mo infra</div></div>
+    </div>
+    <div class="dg">
+      <div class="panel">
+        <div class="ph"><span class="pt">Bucket Allocation</span><span class="ps">latest payment</span></div>
+        <div id="bbars"></div>
+        <div class="ndm" id="bbars-empty">Log a payment to see allocations.</div>
+      </div>
+      <div class="panel vp" id="verdict-panel">
+        <div class="pt" style="margin-bottom:.75rem">Verdict</div>
+        <div class="vtxt" id="v-text">Log your first payment to get a financial verdict.</div>
+        <div class="vstg" id="v-stage"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Growth Phases</span><span class="ps">your ₹925Cr roadmap</span></div>
+      <div class="pht" id="phases">
+        <div class="phi" data-p="0"><div class="phd" id="pd0"></div><div class="phl">Right now</div><div class="phn">Close clients 2–5</div><div class="phdt">CA referral · printed one-pager · demo video. Product works. Pipeline is the only bottleneck.</div><div class="phtg">Target: 5 paying in 90 days</div></div>
+        <div class="phi" data-p="1"><div class="phd" id="pd1"></div><div class="phl">Phase 1 · Yrs 1–2</div><div class="phn">MIDC Satara dominance</div><div class="phdt">Inventory + Shift Tracker bundle. Silver ₹24K / Gold ₹48K tiers. 30–50 clients.</div><div class="phtg">Target: ₹25L ARR</div></div>
+        <div class="phi" data-p="2"><div class="phd" id="pd2"></div><div class="phl">Phase 2 · Yrs 3–5</div><div class="phn">Multi-MIDC self-serve OS</div><div class="phdt">Pune · Nashik · Aurangabad. Modular subscriptions. Compliance Tracker add-on.</div><div class="phtg">Target: ₹2Cr ARR</div></div>
+        <div class="phi" data-p="3"><div class="phd" id="pd3"></div><div class="phl">Phase 3 · Yrs 6–10</div><div class="phn">UK &amp; global arbitrage</div><div class="phdt">Same product. £1,000–1,500/mo pricing. $10M ARR triggers 10–15x PE multiple.</div><div class="phtg">Target: ₹925Cr exit</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG PAYMENT -->
+  <section class="view" id="view-log">
+    <div class="vh"><h1 class="vt">Log Payment</h1><span class="vs">Every rupee allocated on day of receipt</span></div>
+    <div class="lg">
+      <div class="panel">
+        <div class="pt" style="margin-bottom:1.5rem">Payment details</div>
+        <div class="fg"><label class="fl">Client name</label><input type="text" class="fi" id="l-client" placeholder="e.g. S.S. Engineering"/></div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Annual contract value (₹)</label><input type="number" class="fi" id="l-acv" placeholder="75000" min="0" oninput="preview()"/></div>
+          <div class="fg"><label class="fl">Setup fee (₹)</label><input type="number" class="fi" id="l-setup" placeholder="5000" min="0" oninput="preview()"/></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Payment date</label><input type="date" class="fi" id="l-date"/></div>
+          <div class="fg"><label class="fl">Contract type</label><select class="fi" id="l-type"><option value="new">New client</option><option value="renewal">Renewal</option><option value="upgrade">Upgrade</option></select></div>
+        </div>
+        <div class="fg"><label class="fl">Notes (optional)</label><input type="text" class="fi" id="l-notes" placeholder="e.g. CA referral via father"/></div>
+        <button class="btn-p" onclick="logPayment()">Allocate &amp; Log Payment</button>
+      </div>
+      <div class="panel">
+        <div class="pt" style="margin-bottom:1.5rem">Allocation preview</div>
+        <div class="ndm" id="prev-empty">Enter ACV above to preview allocation.</div>
+        <div id="prev-content" style="display:none">
+          <div class="ptot" id="prev-total"></div>
+          <div id="prev-rows"></div>
+          <div class="prule"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Setup fee goes entirely to reinvestment — not split.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUCKETS -->
+  <section class="view" id="view-buckets">
+    <div class="vh"><h1 class="vt">Buckets</h1><span class="vs">Cumulative totals across all payments</span></div>
+    <div class="bkg" id="bkg"></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="view" id="view-history">
+    <div class="vh"><h1 class="vt">Payment History</h1><span class="vs" id="hist-sub">No payments logged yet.</span></div>
+    <div class="panel">
+      <div class="ndm" id="hist-empty">No payments logged yet. Go to Log Payment to add your first.</div>
+      <div id="hist-list"></div>
+    </div>
+  </section>
+
+  <!-- HARD RULES -->
+  <section class="view" id="view-rules">
+    <div class="vh"><h1 class="vt">Hard Rules</h1><span class="vs">Non-negotiable. No exceptions.</span></div>
+    <div class="rl">
+      <div class="rc"><div class="ri" style="background:#1a0000;color:#ff4444"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="rtt">Tax bucket is frozen on day 1</div><div class="rtd">The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (Mar · Jun · Sep · Dec) means penalties and interest. Non-negotiable.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#1a1000;color:#f59e0b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="rtt">Infra bucket is on autopay</div><div class="rtd">Supabase Pro + Vercel + Claude Code set on standing autopay the day payment arrives. Zero decision-making. One missed payment = client downtime = trust destroyed.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#001a08;color:#22c55e"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div><div><div class="rtt">Reinvestment needs a plan before you spend it</div><div class="rtd">Decide what you're buying before the payment lands. CA referral fee, one-pager, demo. That's the entire list pre-5 clients. Unplanned reinvestment is lifestyle inflation in disguise.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#00091a;color:#3b82f6"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="rtt">Emergency fund hard cap: ₹50,000</div><div class="rtd">Once hit, stop allocating to it. Redirect that 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#0e0017;color:#a855f7"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="rtt">Personal bucket scales at milestones only</div><div class="rtd">1–4 clients → 15% ceiling. 5–9 clients → 18%. 10+ clients → 20% max. You're building a ₹925Cr exit, not a salary. Extract as director salary — never dividends.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#1a0008;color:#ec4899"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div><div class="rtt">No borrowing between buckets. Ever.</div><div class="rtd">If infra bucket runs short, that's a pricing problem — raise your ACV. Each bucket is a separate account mentally, ideally physically. No exceptions.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#0d1a00;color:#c8f135"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="rtt">Setup fee → reinvestment only</div><div class="rtd">Setup fees are one-time capital, not recurring revenue. 100% goes to reinvestment, spent on a pre-decided milestone. Not split into percentage buckets.</div></div></div>
+      <div class="rc"><div class="ri" style="background:#0d0a00;color:#f59e0b"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div><div class="rtt">Extract via director salary, not dividends</div><div class="rtd">Director remuneration is a corporate expense that reduces taxable income. Dividends face double taxation. Once Pvt Ltd is registered, all personal extraction goes through salary entries only.</div></div></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const INFRA=3000,ECAP=50000,SK='nxfin_v1';
+const B=[
+  {k:'tax',n:'Tax Reserve',p:25,c:'#ff4444',d:'Transfer to separate account instantly. Advance tax: Mar·Jun·Sep·Dec.',r:'Legally not yours.'},
+  {k:'infra',n:'Infra & Ops',p:12,c:'#f59e0b',d:'Supabase Pro + Vercel + Claude Code. Autopay. Zero decisions.',r:'₹3,000/mo flat to 50 clients.'},
+  {k:'emergency',n:'Emergency Fund',p:10,c:'#3b82f6',d:'Business survival buffer. Stop transfers at ₹50,000.',r:'Hard cap ₹50K — redirect after.',cap:ECAP},
+  {k:'reinvest',n:'Reinvestment',p:28,c:'#c8f135',d:'CA referral fee, one-pager, demo. Pre-decided spend only. + 100% of setup fees.',r:'Spend only on pre-planned milestone.'},
+  {k:'service',n:'Client Service Reserve',p:10,c:'#ec4899',d:'Surprise requests, onboarding, bug fixes.',r:'Log all client costs here.'},
+  {k:'personal',n:'Personal / Director Salary',p:15,c:'#a855f7',d:'Extract as director remuneration. Spend guilt-free.',r:'15% (1–4 clients) → 18% (5–9) → 20% (10+).'},
+];
+
+let payments=[];
+
+function load(){try{const r=localStorage.getItem(SK);payments=r?JSON.parse(r):[]}catch{payments=[]}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(payments))}catch{toast('Storage error.')}}
+
+function getARR(){return payments.reduce((s,p)=>s+(p.acv||0),0)}
+function getClients(){return payments.length}
+function allocate(acv,setup){
+  const r={};
+  B.forEach(b=>{r[b.k]=Math.round(acv*b.p/100)});
+  r.reinvest+=(setup||0);
+  return r;
+}
+function cumulative(){
+  const t={};B.forEach(b=>{t[b.k]=0});
+  payments.forEach(p=>{const a=allocate(p.acv||0,p.setup||0);B.forEach(b=>{t[b.k]+=a[b.k]})});
+  return t;
+}
+function fmt(n){
+  if(n>=10000000)return '₹'+(n/10000000).toFixed(2)+'Cr';
+  if(n>=100000)return '₹'+(n/100000).toFixed(2)+'L';
+  if(n>=1000)return '₹'+Math.round(n/1000)+'K';
+  return '₹'+Math.round(n).toLocaleString('en-IN');
+}
+function fmtF(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
+function verdict(cl,arr){
+  if(!cl)return{t:'Log your first payment to get a financial verdict.',s:'',c:'var(--text3)'};
+  if(arr<INFRA*12)return{t:"ARR doesn't cover 12 months of infra. You're burning money. Do not proceed until client 2 is confirmed paying.",s:'STAGE: LOSS',c:'var(--red)'};
+  if(cl===1)return{t:"One paying client is a proof of concept, not a business. Every rupee of reinvestment goes toward client 2 and 3. Nothing else.",s:'STAGE: PROOF OF CONCEPT',c:'var(--amber)'};
+  if(cl<5)return{t:`${cl} clients — real traction forming. Personal ceiling stays at 15%. Push reinvestment hard into CA referrals and outreach. Don't touch the product.`,s:'STAGE: EARLY TRACTION',c:'var(--amber)'};
+  if(cl<15)return{t:`${cl} clients. Emergency fund likely capped — redirect that 10% to reinvestment. Consider raising ACV. You're undercharging at this scale.`,s:'STAGE: GROWING',c:'var(--accent)'};
+  return{t:`${cl} clients. Infra is a rounding error. Raise ACV to ₹48K+ minimum, launch Shift Tracker bundle, hire first part-time sales person from reinvestment bucket.`,s:'STAGE: SCALING',c:'var(--green)'};
+}
+
+function renderDash(){
+  const arr=getARR(),cl=getClients(),mo=Math.round(arr/12);
+  const mg=arr?Math.round(((arr-INFRA*12)/arr)*100):null;
+  document.getElementById('d-arr').textContent=fmt(arr);
+  document.getElementById('d-mo').textContent=fmt(mo);
+  document.getElementById('d-cl').textContent=cl;
+  document.getElementById('d-mg').textContent=mg!==null?mg+'%':'—';
+  document.getElementById('sb-clients').textContent=cl;
+  document.getElementById('sb-arr').textContent=fmt(arr);
+
+  const be=document.getElementById('bbars-empty'),bb=document.getElementById('bbars');
+  if(!payments.length){be.style.display='block';bb.innerHTML=''}
+  else{
+    be.style.display='none';
+    const lt=payments[payments.length-1];
+    const al=allocate(lt.acv||0,lt.setup||0),tot=(lt.acv||0)+(lt.setup||0);
+    bb.innerHTML=B.map(b=>{
+      const a=al[b.k],pct=tot?Math.round((a/tot)*100):0;
+      return `<div class="bbr"><div class="bbl">${b.n}</div><div class="bbt"><div class="bbf" style="width:${pct}%;background:${b.c}"></div></div><div class="bba">${fmtF(a)}</div></div>`;
+    }).join('');
+  }
+
+  const v=verdict(cl,arr);
+  document.getElementById('v-text').textContent=v.t;
+  document.getElementById('v-stage').textContent=v.s;
+  document.getElementById('verdict-panel').style.borderLeftColor=v.c;
+
+  const phase=cl===0?0:cl<5?0:cl<50?1:cl<200?2:3;
+  [0,1,2,3].forEach(i=>{
+    const d=document.getElementById('pd'+i);
+    if(!d)return;
+    if(i===phase){d.style.cssText='background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(200,241,53,.15)'}
+    else if(i<phase){d.style.cssText='background:var(--text3);border-color:var(--text3);box-shadow:none'}
+    else{d.style.cssText='background:var(--bg);border-color:var(--border2);box-shadow:none'}
+  });
+}
+
+function renderBuckets(){
+  const cum=cumulative();
+  document.getElementById('bkg').innerHTML=B.map(b=>{
+    const amt=cum[b.k]||0,capHit=b.cap&&amt>=b.cap;
+    return `<div class="bkc">
+      <div class="bktop" style="background:${b.c}"></div>
+      <div class="bkl" style="color:${b.c}">${b.n}</div>
+      <div class="bkv">${fmtF(amt)}</div>
+      <div class="bkp">${b.p}% of each annual payment${b.k==='reinvest'?' + 100% of setup fees':''}</div>
+      ${capHit?`<div class="bkcap" style="background:rgba(200,241,53,.1);color:var(--accent)">✓ Cap hit — redirect to reinvestment</div>`:''}
+      ${b.cap&&!capHit?`<div class="bkcap" style="background:var(--bg2);color:var(--text3)">${fmtF(b.cap-amt)} to cap</div>`:''}
+      <div class="bkd">${b.d}<br/><br/><em style="color:var(--text3)">${b.r}</em></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistory(){
+  const list=document.getElementById('hist-list'),empty=document.getElementById('hist-empty'),sub=document.getElementById('hist-sub');
+  if(!payments.length){list.innerHTML='';empty.style.display='block';sub.textContent='No payments logged yet.';return}
+  empty.style.display='none';
+  sub.textContent=`${payments.length} payment${payments.length!==1?'s':''} · Total ARR ${fmt(getARR())}`;
+  list.innerHTML=[...payments].reverse().map((p,ri)=>{
+    const idx=payments.length-1-ri;
+    const tot=(p.acv||0)+(p.setup||0);
+    const dt=p.date?new Date(p.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    return `<div class="hi">
+      <span class="hit ${p.type||'new'}">${p.type||'new'}</span>
+      <div style="flex:1"><div class="hic">${p.client||'Unknown'}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">ACV ${fmtF(p.acv)} · Setup ${fmtF(p.setup||0)} · ${p.notes||'No notes'}</div></div>
+      <div style="text-align:right"><div class="hia">${fmtF(tot)}</div><div class="hid">${dt}</div></div>
+      <button class="hdel" onclick="del(${idx})">delete</button>
+    </div>`;
+  }).join('');
+}
+
+function renderAll(){renderDash();renderBuckets();renderHistory()}
+
+window.logPayment=function(){
+  const cl=document.getElementById('l-client').value.trim();
+  const acv=parseFloat(document.getElementById('l-acv').value)||0;
+  const setup=parseFloat(document.getElementById('l-setup').value)||0;
+  const date=document.getElementById('l-date').value;
+  const type=document.getElementById('l-type').value;
+  const notes=document.getElementById('l-notes').value.trim();
+  if(!cl){toast('Enter a client name.');return}
+  if(!acv){toast('Enter the annual contract value.');return}
+  payments.push({client:cl,acv,setup,date,type,notes,ts:Date.now()});
+  save();renderAll();
+  document.getElementById('l-client').value='';
+  document.getElementById('l-acv').value='';
+  document.getElementById('l-setup').value='';
+  document.getElementById('l-notes').value='';
+  document.getElementById('prev-content').style.display='none';
+  document.getElementById('prev-empty').style.display='block';
+  toast(`${cl} logged — ${fmtF(acv+setup)} allocated.`);
+};
+
+window.del=function(idx){
+  if(!confirm(`Delete payment from "${payments[idx].client}"?`))return;
+  payments.splice(idx,1);save();renderAll();toast('Payment deleted.');
+};
+
+window.preview=function(){
+  const acv=parseFloat(document.getElementById('l-acv').value)||0;
+  const setup=parseFloat(document.getElementById('l-setup').value)||0;
+  const pc=document.getElementById('prev-content'),pe=document.getElementById('prev-empty');
+  if(!acv){pc.style.display='none';pe.style.display='block';return}
+  pc.style.display='block';pe.style.display='none';
+  document.getElementById('prev-total').textContent=`Total: ${fmtF(acv+setup)}`;
+  const al=allocate(acv,setup);
+  document.getElementById('prev-rows').innerHTML=B.map(b=>`
+    <div class="prw">
+      <div class="prl"><div class="prd" style="background:${b.c}"></div><div><div class="prn">${b.n}</div><div class="prp">${b.p}%${b.k==='reinvest'&&setup?' + setup fee':''}</div></div></div>
+      <div class="pra" style="color:${b.c}">${fmtF(al[b.k])}</div>
+    </div>`).join('');
+};
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+
+// NAV
+document.querySelectorAll('.nb').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v=btn.dataset.view;
+    document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+v).classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    if(v==='buckets')renderBuckets();
+    else if(v==='history')renderHistory();
+    else if(v==='dashboard')renderDash();
+  });
+});
+
+document.getElementById('ham').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// SET DATE
+const dd=document.getElementById('l-date');
+if(dd)dd.value=new Date().toISOString().split('T')[0];
+const ds=document.getElementById('dash-date');
+if(ds)ds.textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).toUpperCase();
+
+load();renderAll();
+</script>
+</body>
+</html>
