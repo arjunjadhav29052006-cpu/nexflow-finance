@@ -139,15 +139,16 @@ body{display:flex;min-height:100vh}
 .prule{margin-top:.875rem;padding:7px 11px;background:var(--bg2);border-radius:var(--r);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:7px}
 
 /* ── BUCKETS ── */
-.bkg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.bkc{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem;position:relative;overflow:hidden;transition:border-color .2s}
+.bkg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+.bkc{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;position:relative;overflow:hidden;transition:border-color .2s}
 .bkc:hover{border-color:var(--border2)}
 .bktop{position:absolute;top:0;left:0;right:0;height:3px}
-.bkl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
-.bkv{font-family:var(--fm);font-size:22px;font-weight:600;color:var(--text);line-height:1;margin-bottom:3px}
-.bkp{font-family:var(--fm);font-size:10px;color:var(--text3);margin-bottom:10px}
-.bkd{font-size:11px;color:var(--text3);line-height:1.55;border-top:1px solid var(--border);padding-top:8px;margin-top:8px}
-.bkcap{font-family:var(--fm);font-size:9px;margin-top:6px;padding:3px 7px;border-radius:4px;display:inline-block}
+.bkl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;margin-top:4px}
+.bkv{font-family:var(--fm);font-size:24px;font-weight:600;color:var(--text);line-height:1;margin-bottom:4px}
+.bkp{font-family:var(--fm);font-size:10px;color:var(--text2);margin-bottom:4px}
+.bkd{font-size:12px;color:var(--text2);line-height:1.65;border-top:1px solid var(--border);padding-top:12px;margin-top:12px}
+.bkd em{display:block;margin-top:8px;font-style:normal;font-size:11px;color:var(--accent2);font-family:var(--fm)}
+.bkcap{font-family:var(--fm);font-size:10px;margin-top:8px;padding:4px 8px;border-radius:4px;display:inline-block}
 .bk-monthly{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:4px}
 
 /* ── HISTORY ── */
@@ -225,12 +226,13 @@ body{display:flex;min-height:100vh}
   .sidebar{transform:translateX(calc(-1 * var(--sw)))}
   .sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.6)}
   .main{margin-left:0}.mob-hdr{display:flex}
-  .view{padding:1.25rem}
+  .view{padding:1.25rem;overflow-x:hidden}
   .dg{grid-template-columns:1fr}.lg{grid-template-columns:1fr}
   .sg{grid-template-columns:1fr 1fr}.bkg{grid-template-columns:1fr}
   .pht{grid-template-columns:1fr}.pht::before{display:none}
   .fr{grid-template-columns:1fr}.vt{font-size:22px}
   .tc-grid{grid-template-columns:repeat(2,1fr)}
+  #log-result{margin:1rem 0}
 }
 @media(max-width:480px){.sg{grid-template-columns:1fr}.export-row{flex-direction:column}}
 </style>
@@ -251,6 +253,7 @@ body{display:flex;min-height:100vh}
     <button class="nb" data-view="buckets"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Buckets</button>
     <button class="nb" data-view="reinvest"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Reinvestment Log</button>
     <button class="nb" data-view="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button>
+    <button class="nb" data-view="churn"><svg viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>Churn Tracker</button>
     <div class="nav-section">Operations</div>
     <button class="nb" data-view="pvtltd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Pvt Ltd Setup</button>
     <button class="nb" data-view="rules"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Hard Rules</button>
@@ -281,6 +284,17 @@ body{display:flex;min-height:100vh}
         <button class="btn-sec" onclick="exportData()">Export JSON</button>
         <button class="btn-sec" onclick="document.getElementById('import-input').click()">Import JSON</button>
         <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)"/>
+      </div>
+    </div>
+
+    <!-- DRY RUN BANNER — shown until first real payment is logged -->
+    <div id="dryrun-banner" style="display:none;background:linear-gradient(135deg,#001a0d,#0a0a0a);border:1px solid #003a1a;border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Run a dry run before your first real payment</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;max-width:500px">Preview exactly how a P2 Lite Year 1 payment (₹64,000) would split across all 6 buckets — with your actual ARR-based personal % and tiered infra %. Nothing is saved. Verify the math is right before a real ₹64K hits.</div>
+        </div>
+        <button class="btn-sec" onclick="runDryRun()" style="flex-shrink:0;background:rgba(34,197,94,.1);border-color:#003a1a;color:var(--green)">Preview Allocation</button>
       </div>
     </div>
     <div class="sg">
@@ -331,26 +345,61 @@ body{display:flex;min-height:100vh}
       <div class="panel">
         <div class="pt" style="margin-bottom:1.25rem">Payment details</div>
         <div class="fg"><label class="fl">Client name</label><input type="text" class="fi" id="l-client" placeholder="e.g. S.S. Engineering"/></div>
+        <div class="fr" style="margin-bottom:.875rem">
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">Product</label>
+            <select class="fi" id="l-product" onchange="onPricingChange()">
+              <option value="p2">P2 — Raw Material &amp; Inventory</option>
+              <option value="p1">P1 — Shift Production Reporter</option>
+              <option value="ent">Enterprise (P1 Pro + P2 Pro)</option>
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">Tier</label>
+            <select class="fi" id="l-tier" onchange="onPricingChange()">
+              <option value="lite">Lite / Basic</option>
+              <option value="pro">Pro</option>
+            </select>
+          </div>
+        </div>
         <div class="fr">
-          <div class="fg"><label class="fl">Annual contract value (₹)</label><input type="number" class="fi" id="l-acv" placeholder="75000" min="0" oninput="preview()"/></div>
-          <div class="fg"><label class="fl">Setup fee (₹)</label><input type="number" class="fi" id="l-setup" placeholder="5000" min="0" oninput="preview()"/></div>
+          <div class="fg">
+            <label class="fl">Contract year</label>
+            <select class="fi" id="l-year" onchange="onPricingChange()">
+              <option value="1">Year 1 (includes setup fee)</option>
+              <option value="2">Year 2+ (renewal — no setup fee)</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Contract type</label>
+            <select class="fi" id="l-type"><option value="new">New client</option><option value="renewal">Renewal</option><option value="upgrade">Upgrade</option></select>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:.875rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div><div style="font-size:9px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">Setup Fee</div><div style="font-family:var(--fm);font-size:14px;font-weight:600;color:var(--amber)" id="calc-setup">₹20,000</div></div>
+            <div><div style="font-size:9px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">Annual Recurring</div><div style="font-family:var(--fm);font-size:14px;font-weight:600;color:var(--text)" id="calc-acv">₹44,000</div></div>
+            <div><div style="font-size:9px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">Day-1 Total</div><div style="font-family:var(--fm);font-size:14px;font-weight:600;color:var(--accent)" id="calc-total">₹64,000</div></div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)" id="calc-breakdown">Setup ₹20K (once) + ₹40K/yr + ₹4K AMC</div>
         </div>
         <div class="fr">
           <div class="fg"><label class="fl">Payment date</label><input type="date" class="fi" id="l-date"/></div>
-          <div class="fg"><label class="fl">Contract type</label><select class="fi" id="l-type"><option value="new">New client</option><option value="renewal">Renewal</option><option value="upgrade">Upgrade</option></select></div>
+          <div class="fg"><label class="fl">Override total (₹)</label><input type="number" class="fi" id="l-override" placeholder="Leave blank to use tier pricing" min="0" oninput="preview()"/></div>
         </div>
         <div class="fg"><label class="fl">Notes (optional)</label><input type="text" class="fi" id="l-notes" placeholder="e.g. CA referral via father"/></div>
         <button class="btn-p" onclick="logPayment()">Allocate &amp; Log Payment</button>
       </div>
       <div class="panel">
         <div class="pt" style="margin-bottom:1.25rem">Live allocation preview</div>
-        <div class="ndm" id="prev-empty">Enter ACV above to preview.</div>
+        <div class="ndm" id="prev-empty">Select product and tier above.</div>
         <div id="prev-content" style="display:none">
           <div class="ptot" id="prev-total"></div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)" id="prev-split"></div>
           <div id="prev-rows"></div>
-          <div class="prule">
+          <div class="prule" style="margin-top:.75rem">
             <svg viewBox="0 0 24 24" width="13" height="13" style="stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Setup fee → 100% reinvestment. Personal % auto-adjusts by client count.
+            Setup fee → 100% reinvestment. ACV split across all buckets. Personal % auto-adjusts.
           </div>
         </div>
       </div>
@@ -413,9 +462,60 @@ body{display:flex;min-height:100vh}
     <div class="vh"><div class="vh-left"><h1 class="vt">Hard Rules</h1><span class="vs">Non-negotiable. No exceptions. Ever.</span></div></div>
     <div class="rl" id="rules-list"></div>
   </section>
-</main>
 
-<!-- REINVEST MODAL -->
+  <!-- ── CHURN TRACKER ── -->
+  <section class="view" id="view-churn">
+    <div class="vh">
+      <div class="vh-left"><h1 class="vt">Churn Tracker</h1><span class="vs">Retention is more valuable than acquisition above 20 clients</span></div>
+      <button class="btn-sec" onclick="openChurnModal()">+ Log Churn</button>
+    </div>
+    <div class="sg" id="churn-stats" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Churned Clients</span><span class="ps" id="churn-sub">No churn logged yet.</span></div>
+      <div class="ndm" id="churn-empty">No churn logged. Keep it that way.</div>
+      <div id="churn-list"></div>
+    </div>
+    <div class="panel" style="background:linear-gradient(135deg,#1a0000,#0a0a0a);border-color:#2a0000">
+      <div class="pt" style="color:var(--red);margin-bottom:.75rem">The Year 2 Revenue Drop</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.65">Every churned client doesn't just cost you one year — it costs every renewal year after. At Lite (₹44K/yr Y2+), one churn = ₹44K lost annually. At Pro (₹70K/yr), one churn = ₹70K/yr gone forever. Year 2 revenue already drops 31–34% as setup fees disappear. Churn on top compounds the damage. The only defence is obsessive retention.</div>
+    </div>
+  </section>
+
+  </main>
+
+<!-- CHURN MODAL -->
+<div class="modal-overlay" id="churn-modal">
+  <div class="modal">
+    <div class="modal-title">Log Churned Client <button class="modal-close" onclick="closeChurnModal()">×</button></div>
+    <div class="fg"><label class="fl">Client name</label><input type="text" class="fi" id="ch-client" placeholder="e.g. ABC Industries"/></div>
+    <div class="fr">
+      <div class="fg">
+        <label class="fl">Product / tier</label>
+        <select class="fi" id="ch-product">
+          <option value="p2_lite">P2 Lite (₹44K/yr)</option>
+          <option value="p2_pro">P2 Pro (₹70K/yr)</option>
+          <option value="p1_lite">P1 Basic (₹44K/yr)</option>
+          <option value="p1_pro">P1 Pro (₹70K/yr)</option>
+          <option value="ent">Enterprise (₹1.14L/yr)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Churn date</label><input type="date" class="fi" id="ch-date"/></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Reason</label>
+      <select class="fi" id="ch-reason">
+        <option value="price">Price — too expensive</option>
+        <option value="product">Product — missing feature</option>
+        <option value="competitor">Switched to competitor</option>
+        <option value="closure">Business closed / paused</option>
+        <option value="support">Poor support experience</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="ch-notes" placeholder="What could have prevented this?"/></div>
+    <button class="btn-p" onclick="logChurn()" style="background:var(--red);color:#fff">Log Churn</button>
+  </div>
+</div>
 <div class="modal-overlay" id="ri-modal">
   <div class="modal">
     <div class="modal-title">Log Reinvestment Spend <button class="modal-close" onclick="closeReinvestModal()">×</button></div>
@@ -433,16 +533,44 @@ body{display:flex;min-height:100vh}
 
 <script>
 'use strict';
-const INFRA=3000,ECAP=50000,SK='nxfin_v3';
+const INFRA_TIERS=[
+  {maxClients:5,  monthly:2576, label:'0–5 clients',  detail:'Supabase Pro ₹2,076 + Claude Code ~₹500. Vercel free tier sufficient.'},
+  {maxClients:15, monthly:4276, label:'6–15 clients', detail:'Supabase Pro ₹2,076 + Vercel Pro ₹1,700 + Claude Code ~₹500.'},
+  {maxClients:30, monthly:5500, label:'16–30 clients',detail:'Supabase Pro ₹2,076 + Vercel Pro ₹1,700 + Claude Code ~₹1,500 + buffer ₹224.'},
+  {maxClients:999,monthly:8000, label:'31–50 clients',detail:'Supabase Pro ₹2,076 + Vercel Pro ₹1,700 + Claude Code ~₹2,000 + domain/misc ₹2,224.'},
+];
+function getInfraTier(cl){
+  return INFRA_TIERS.find(t=>cl<=t.maxClients)||INFRA_TIERS[INFRA_TIERS.length-1];
+}
+// Infra bucket % is dynamic: infra annual cost / ARR, capped at 20% floor at 8%
+// Ensures infra bucket always covers the actual tiered cost, not a flat 12%
+function getInfraPct(cl,arr){
+  const tier=getInfraTier(cl);
+  if(!arr)return 12; // default before any payments
+  const needed=Math.round((tier.monthly*12/arr)*100);
+  return Math.max(8,Math.min(20,needed));
+}
 
-// ── BUCKET CONFIG ── (pct is base; personal auto-adjusts by client count)
+const PERSONAL_ARR_TIERS=[
+  {minARR:0,      maxARR:199999,    pct:15, label:'< ₹2L ARR'},
+  {minARR:200000, maxARR:499999,    pct:18, label:'₹2L–5L ARR'},
+  {minARR:500000, maxARR:999999999, pct:20, label:'₹5L+ ARR'},
+];
+function getPersonalPctByARR(arr){
+  const t=PERSONAL_ARR_TIERS.find(t=>arr>=t.minARR&&arr<=t.maxARR)||PERSONAL_ARR_TIERS[0];
+  return t.pct;
+}
+const SERVICE_MONTHLY_CEILING=8000;
+const ECAP=50000,SK='nxfin_v3';
+
+// ── BUCKET CONFIG ──
 const B=[
-  {k:'tax',     n:'Tax Reserve',              pct:25, c:'#ff4444', d:'Transfer to separate account instantly. Advance tax: Mar·Jun·Sep·Dec.',           r:'Legally not yours. Do not rationalise.'},
-  {k:'infra',   n:'Infra & Ops',              pct:12, c:'#f59e0b', d:'Supabase Pro + Vercel + Claude Code. Set on autopay. Zero decisions monthly.',     r:'₹3,000/mo flat — covers 50 clients.'},
-  {k:'emergency',n:'Emergency Fund',          pct:10, c:'#3b82f6', d:'Business survival buffer. Stops at ₹50K cap — excess redirects to reinvestment.', r:'Hard cap ₹50K.',  cap:ECAP},
-  {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees.',     r:'Spend only on pre-planned milestones.'},
-  {k:'service', n:'Client Service Reserve',   pct:10, c:'#ec4899', d:'Surprise requests, onboarding time, bug fixes, custom work.',                     r:'Log all client costs here monthly.'},
-  {k:'personal',n:'Personal / Director Salary',pct:15,c:'#a855f7', d:'Extract as director remuneration — reduces corporate taxable income.',            r:'Auto-scales: 15% (1–4) → 18% (5–9) → 20% (10+).'},
+  {k:'tax',     n:'Tax Reserve',              pct:25, c:'#ff4444', d:'Transfer to separate account instantly. Advance tax: Jun·Sep·Dec·Mar.',           r:'Legally not yours. Do not rationalise.'},
+  {k:'infra',   n:'Infra & Ops',              pct:12, c:'#f59e0b', d:'Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. Autopay.',r:'Review tier every 5 clients. Never borrow from other buckets if infra grows.'},
+  {k:'emergency',n:'Emergency Fund',          pct:10, c:'#3b82f6', d:'Business survival buffer. Stops at ₹50K cap — excess redirects to reinvestment.', r:'Hard cap ₹50K. No exceptions.',  cap:ECAP},
+  {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees.',     r:'Spend only on pre-planned milestones. Log every spend.'},
+  {k:'service', n:'Client Service Reserve',   pct:10, c:'#ec4899', d:'Bug fixes, onboarding, surprise requests. Monthly drain ceiling: ₹8,000. Beyond that — charge the client or log as custom work.',r:'Max ₹8K/mo drain. Anything above = billable. Surplus rolls over, never cashed out.'},
+  {k:'personal',n:'Personal / Director Salary',pct:15,c:'#a855f7', d:'Extract as director remuneration. Scales by ARR crossed: < ₹2L → 15% · ₹2L–5L → 18% · ₹5L+ → 20%.',r:'ARR-triggered, not client-count triggered. App auto-calculates.'},
 ];
 
 const PVT_CHECKS=[
@@ -461,99 +589,136 @@ const LAWS=[
   {num:'Section 56(2)(viib) — Abolished Budget 2025-26', title:'Angel Tax completely removed — Budget 2025-26', desc:'Angel Tax has been fully abolished for DPIIT-recognised startups — both domestic and foreign investors. This means when you raise funding in Phase 2, investors will NOT face tax on any premium paid over face value of shares. Zero friction on fundraising. This was a major blocker for Indian startups — it is now gone.', benefit:'Zero tax friction on fundraising rounds', benefitColor:'rgba(200,241,53,.15)', benefitTextColor:'#c8f135'},
   {num:'DPIIT Recognition + Section 80-IAC — Budget 2025-26 updated', title:'100% tax holiday for 3 years — apply after incorporation', desc:'Apply for DPIIT Startup Recognition (free, startupindia.gov.in) immediately after incorporating. Then apply separately to IMB for 80-IAC exemption. If approved: 100% income tax exemption on profits for any 3 consecutive years within your first 10 years. Budget 2025-26 extended eligibility to startups incorporated before April 1, 2030. HONEST WARNING: Only ~1.8% of 2,07,135 DPIIT-recognised startups have received 80-IAC approval. IMB separately evaluates innovation, scalability, and wealth-creation potential. DPIIT recognition alone is not enough — the IMB application is the hard part. Apply early, demonstrate genuine innovation.', benefit:'100% profit tax exemption — 3 years (Budget 2025-26)', benefitColor:'rgba(200,241,53,.15)', benefitTextColor:'#c8f135'},
   {num:'GST — Section 2(6) IGST Act + LUT Export Benefit', title:'0% GST on UK/global client invoices under LUT', desc:'SaaS services to Indian clients: 18% GST (SAC code 998314). BUT for UK/global clients in Phase 3: if all 5 conditions of Section 2(6) of IGST Act are met, it qualifies as Export of Services — 0% GST under Letter of Undertaking (LUT). File LUT in Form GST RFD-11 before invoicing international clients each year. You then claim full Input Tax Credit refund on all business expenses. Net effect: UK clients pay you with zero GST, and you reclaim tax on your own costs. File LUT on startupindia or GST portal before first international invoice.', benefit:'0% GST + ITC refund on all UK/global revenue', benefitColor:'rgba(59,130,246,.15)', benefitTextColor:'#3b82f6'},
-  {num:'Section 44AD — Presumptive Taxation (pre-Pvt Ltd only)', title:'8% presumptive profit before incorporation', desc:'Before Pvt Ltd registration, under Section 44AD you declare 8% of gross turnover as taxable profit (6% for digital receipts). At ₹25L turnover, deemed profit is only ₹2L — minimal tax. Use this window strategically. Once you incorporate as Pvt Ltd, Section 115BAA applies instead. Do not delay incorporation to exploit this — the Pvt Ltd structure gives far greater long-term benefits.', benefit:'Minimal tax burden pre-incorporation', benefitColor:'rgba(245,158,11,.15)', benefitTextColor:'#f59e0b'},
+  {num:'Section 44AD — Presumptive Taxation (pre-Pvt Ltd only)', title:'Presumptive taxation: 8% of gross turnover deemed as profit (for businesses under ₹2Cr)', desc:'Section 44AD applies to businesses with gross turnover under ₹2 Crore. Under it, 8% of turnover is deemed profit (6% for digital receipts) — you pay tax only on that deemed amount regardless of actual profit. Before Pvt Ltd registration this reduces your compliance burden significantly. At ₹25L turnover, deemed profit is only ₹2L — minimal tax. Important: once incorporated as Pvt Ltd, Section 115BAA applies instead. Do not delay incorporation to exploit 44AD — the Pvt Ltd structure gives far greater long-term benefits including IP protection and exit readiness.', benefit:'Minimal tax and compliance burden pre-incorporation', benefitColor:'rgba(245,158,11,.15)', benefitTextColor:'#f59e0b'},
   {num:'Director Remuneration — Companies Act 2013', title:'Extract profit as director salary — primary mechanism', desc:'Director remuneration is a corporate expense under Companies Act 2013 — it reduces net taxable income before corporate tax is applied. At your current revenue level and age, your director salary will be well within the ₹3L basic exemption limit (new tax regime). This is your only legitimate profit extraction route — not dividends, which face double taxation (corporate tax already paid + dividend distribution tax).', benefit:'Reduces corporate taxable income directly', benefitColor:'rgba(168,85,247,.15)', benefitTextColor:'#a855f7'},
   {num:'IP Assignment — Companies Act 2013', title:'Assign all IP to the Pvt Ltd immediately after incorporation', desc:'Every line of Nexflow code, every n8n workflow, every domain (nexflowautomations.com, stardust.in), every trademark — must be formally assigned to the Pvt Ltd via an IP Assignment Agreement the week you incorporate. A PE buyer or strategic acquirer in Phase 3 is buying IP ownership, not people. If IP is still in your personal name during due diligence, the deal collapses or valuation craters. Get your CA to draft this on Day 1.', benefit:'Non-negotiable for ₹925Cr exit valuation', benefitColor:'rgba(255,68,68,.15)', benefitTextColor:'#ff4444'},
   {num:'GST Input Tax Credit — B2B domestic clients', title:'Factory clients can claim ITC on your GST invoices', desc:'When you charge 18% GST to factory clients, they claim it back as Input Tax Credit — so your GST is NOT a cost to them. This makes your pricing more competitive than an unregistered competitor. Always issue GST invoices to B2B clients. Register voluntarily even before ₹20L threshold to get this advantage early and to keep your own ITC claims valid.', benefit:'GST is neutral cost to B2B factory clients', benefitColor:'rgba(245,158,11,.15)', benefitTextColor:'#f59e0b'},
 ];
 
 const RULES=[
-  {icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',  ic:'#1a0000', c:'#ff4444', t:'Tax bucket is frozen on day 1',            d:'The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (Mar·Jun·Sep·Dec) incurs 1% interest per month plus penalties. Non-negotiable.'},
-  {icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',                   ic:'#1a1000', c:'#f59e0b', t:'Infra bucket is on autopay',               d:'Supabase Pro + Vercel + Claude Code on standing autopay from day of payment. Zero decision-making. 50 clients depend on uptime. One missed payment = downtime = trust destroyed.'},
-  {icon:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',  ic:'#001a08', c:'#22c55e', t:'Reinvestment needs a plan before you spend it',d:'Decide the exact spend before the payment lands. Log it in Reinvestment Log. CA referral fee, one-pager, demo. Pre-5 clients, that\'s the entire list. Unplanned reinvestment is lifestyle inflation.'},
+  {icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',  ic:'#1a0000', c:'#ff4444', t:'Tax bucket is frozen on day 1',            d:'The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (Jun·Sep·Dec·Mar) incurs 1% interest per month plus penalties. Non-negotiable.'},
+  {icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',                   ic:'#1a1000', c:'#f59e0b', t:'Infra bucket is on autopay — tiered cost',  d:'Supabase Pro + Vercel + Claude Code on standing autopay. Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. App calculates infra % dynamically.'},
+  {icon:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',  ic:'#001a08', c:'#22c55e', t:'Reinvestment needs a plan before you spend it',d:'Decide the exact spend before the payment lands. Log it in Reinvestment Log. CA referral fee, one-pager, demo. Pre-₹2L ARR, that\'s the entire list. Unplanned reinvestment is lifestyle inflation.'},
   {icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',                               ic:'#00091a', c:'#3b82f6', t:'Emergency fund hard cap: ₹50,000',           d:'Once hit, stop all allocations to it. The app auto-redirects the 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.'},
-  {icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',  ic:'#0e0017', c:'#a855f7', t:'Personal bucket scales at milestones only',  d:'1–4 clients → 15%. 5–9 clients → 18%. 10+ clients → 20% max. The app calculates this automatically. You\'re building a ₹925Cr exit. Extract as director salary only — never dividends.'},
+  {icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',  ic:'#0e0017', c:'#a855f7', t:'Personal bucket scales by ARR — not client count',  d:'< ₹2L ARR → 15% · ₹2L–5L ARR → 18% · ₹5L+ ARR → 20% max. ARR-triggered because a discounted client doesn\'t earn the same milestone as a full-price one. App auto-calculates. Extract as director salary only — never dividends.'},
   {icon:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',           ic:'#1a0008', c:'#ec4899', t:'No borrowing between buckets. Ever.',         d:'If infra bucket runs short, that\'s a pricing problem — raise your ACV. Each bucket is a separate physical bank account eventually. No exceptions, no rationalisations.'},
   {icon:'<polyline points="20 6 9 17 4 12"/>',                                                     ic:'#0d1a00', c:'#c8f135', t:'Setup fee → reinvestment only',              d:'Setup fees are one-time capital, not recurring revenue. 100% goes to reinvestment, spent on a pre-decided milestone. Not split. Not touched for personal use.'},
   {icon:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>', ic:'#0d0a00', c:'#f59e0b', t:'Extract via director salary, not dividends', d:'Director remuneration is a corporate expense — reduces taxable income. Dividends face double taxation (corporate tax + DDT). Once Pvt Ltd is registered, all personal extraction through salary entries only.'},
   {icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', ic:'#001a1a', c:'#22c55e', t:'All IP must be assigned to the company',    d:'Every line of Nexflow code, every workflow, every domain — must be IP-assigned to the Pvt Ltd via a formal IP Assignment Agreement signed by you as founder. Without this, exit due diligence fails.'},
 ];
 
-// ── TAX DEADLINES ──
-const TAX_DEADLINES=[
-  {month:'Jun',day:15,label:'Q1 Advance Tax',year_offset:0},
-  {month:'Sep',day:15,label:'Q2 Advance Tax',year_offset:0},
-  {month:'Dec',day:15,label:'Q3 Advance Tax',year_offset:0},
-  {month:'Mar',day:15,label:'Q4 Advance Tax',year_offset:1},
-];
+// ── PRICING ENGINE ──
+// Structure: {setup_y1, acv, breakdown_y1, breakdown_y2}
+// Y1 total = setup_y1 + acv. Y2+ total = acv only (no setup).
+// acv already includes AMC (AMC is baked into the annual figure).
+const PRICING={
+  p2_lite: {setup:20000,acv:44000,b1:'Setup ₹20K (once) + ₹40K subscription + ₹4K AMC = ₹64K day-1',b2:'₹40K subscription + ₹4K AMC = ₹44K/yr'},
+  p2_pro:  {setup:35000,acv:70000,b1:'Setup ₹35K (once) + ₹66K subscription + ₹4K AMC = ₹1.05L day-1',b2:'₹66K subscription + ₹4K AMC = ₹70K/yr'},
+  p1_lite: {setup:20000,acv:44000,b1:'Setup ₹20K (once) + ₹40K subscription + ₹4K AMC = ₹64K day-1',b2:'₹40K subscription + ₹4K AMC = ₹44K/yr'},
+  p1_pro:  {setup:35000,acv:70000,b1:'Setup ₹35K (once) + ₹66K subscription + ₹4K AMC = ₹1.05L day-1',b2:'₹66K subscription + ₹4K AMC = ₹70K/yr'},
+  ent_lite:{setup:55000,acv:114000,b1:'Setup ₹55K (once) + ₹1.08L subscription + ₹6K AMC = ₹1.73L day-1',b2:'₹1.08L subscription + ₹6K AMC = ₹1.14L/yr'},
+};
 
-// ── STATE ──
-let payments=[],reinvestSpends=[],taxPaid={},pvtChecks={};
+function getPricingKey(){
+  const prod=document.getElementById('l-product')?.value||'p2';
+  const tier=document.getElementById('l-tier')?.value||'lite';
+  if(prod==='ent')return 'ent_lite';
+  return `${prod}_${tier}`;
+}
+
+function getActivePricing(){
+  const key=getPricingKey();
+  const yr=document.getElementById('l-year')?.value||'1';
+  const p=PRICING[key];
+  const setup=yr==='1'?p.setup:0;
+  const acv=p.acv;
+  const total=setup+acv;
+  return{setup,acv,total,breakdown:yr==='1'?p.b1:p.b2};
+}
+
+window.onPricingChange=function(){
+  // Hide Pro tier for Enterprise (only one pricing)
+  const prod=document.getElementById('l-product')?.value;
+  const tierSel=document.getElementById('l-tier');
+  if(prod==='ent'){tierSel.style.display='none';tierSel.closest('.fg').style.opacity='.4'}
+  else{tierSel.style.display='';tierSel.closest('.fg').style.opacity='1'}
+
+  const p=getActivePricing();
+  document.getElementById('calc-setup').textContent=fmtF(p.setup);
+  document.getElementById('calc-acv').textContent=fmtF(p.acv);
+  document.getElementById('calc-total').textContent=fmtF(p.total);
+  document.getElementById('calc-breakdown').textContent=p.breakdown;
+  preview();
+};
+let payments=[],reinvestSpends=[],churns=[],taxPaid={},pvtChecks={};
 
 function load(){
   try{
     const r=localStorage.getItem(SK);
-    if(r){const d=JSON.parse(r);payments=d.payments||[];reinvestSpends=d.reinvestSpends||[];taxPaid=d.taxPaid||{};pvtChecks=d.pvtChecks||{}}
-  }catch{payments=[];reinvestSpends=[];taxPaid={};pvtChecks={}}
+    if(r){const d=JSON.parse(r);payments=d.payments||[];reinvestSpends=d.reinvestSpends||[];churns=d.churns||[];taxPaid=d.taxPaid||{};pvtChecks=d.pvtChecks||{}}
+  }catch{payments=[];reinvestSpends=[];churns=[];taxPaid={};pvtChecks={}}
 }
 function save(){
-  try{localStorage.setItem(SK,JSON.stringify({payments,reinvestSpends,taxPaid,pvtChecks}))}
+  try{localStorage.setItem(SK,JSON.stringify({payments,reinvestSpends,churns,taxPaid,pvtChecks}))}
   catch{toast('Storage error.')}
 }
 
 // ── COMPUTED ──
-function getARR(){return payments.reduce((s,p)=>s+(p.acv||0),0)}
-function getClients(){return payments.length}
-function getPersonalPct(cl){return cl>=10?20:cl>=5?18:15}
+function getARR(){return payments.filter(p=>!p.isDryRun).reduce((s,p)=>s+(p.acv||0),0)}
+function getSetupTotal(){return payments.filter(p=>!p.isDryRun).reduce((s,p)=>s+(p.setup||0),0)}
+function getClients(){return payments.filter(p=>!p.isDryRun).length}
 
-function allocate(acv,setup,clientCountAtTime){
-  const cl=clientCountAtTime||getClients();
-  const personalPct=getPersonalPct(cl);
-  // Adjust reinvest to keep total = 100%
-  const basePcts={tax:25,infra:12,emergency:10,service:10,personal:personalPct};
-  const usedFixed=Object.values(basePcts).reduce((a,b)=>a+b,0);
-  const reinvestPct=100-usedFixed;
-
-  // Emergency cap: if cumulative emergency >= ECAP, redirect to reinvest
-  const cumEmerg=payments.reduce((s,p)=>{
-    const a=allocate(p.acv||0,p.setup||0,cl);return s+a.emergency;
-  },0);
-  const emergOver=Math.max(0,cumEmerg-ECAP);
-  const emergAlloc=Math.min(Math.round(acv*basePcts.emergency/100),Math.max(0,ECAP-cumEmerg+Math.round(acv*basePcts.emergency/100)));
-
-  const r={
-    tax:      Math.round(acv*basePcts.tax/100),
-    infra:    Math.round(acv*basePcts.infra/100),
-    emergency:Math.max(0,Math.min(Math.round(acv*basePcts.emergency/100),Math.max(0,ECAP-getCumEmergency()))),
-    reinvest: Math.round(acv*reinvestPct/100)+(setup||0),
-    service:  Math.round(acv*basePcts.service/100),
-    personal: Math.round(acv*personalPct/100),
-  };
-  // redirect emergency overflow to reinvest
-  const emergDiff=Math.round(acv*basePcts.emergency/100)-r.emergency;
-  r.reinvest+=emergDiff;
-  return r;
-}
-
+// Bug fix: getCumEmergency defined BEFORE allocate so no forward-ref issue
 function getCumEmergency(){
   let total=0;
-  payments.forEach(p=>{total+=Math.min(Math.round((p.acv||0)*0.10),Math.max(0,ECAP-total))});
+  payments.filter(p=>!p.isDryRun).forEach(p=>{
+    const raw=Math.round((p.acv||0)*0.10);
+    total+=Math.min(raw,Math.max(0,ECAP-total));
+  });
   return Math.min(total,ECAP);
 }
 
+// knownCumEmerg and runningARR passed in from cumulative() to avoid recalculation
+function allocate(acv,setup,runningARR,knownCumEmerg){
+  const arr=(runningARR!==undefined)?runningARR:getARR();
+  const cl=getClients();
+  const personalPct=getPersonalPctByARR(arr);
+  const infraPct=getInfraPct(cl,arr||acv); // use acv as proxy if arr is 0
+  const basePcts={tax:25,infra:infraPct,emergency:10,service:10,personal:personalPct};
+  const usedFixed=Object.values(basePcts).reduce((a,b)=>a+b,0);
+  const reinvestPct=Math.max(0,100-usedFixed);
+  const cumEmerg=(knownCumEmerg!==undefined)?knownCumEmerg:getCumEmergency();
+  const rawEmerg=Math.round(acv*basePcts.emergency/100);
+  const emergAlloc=Math.max(0,Math.min(rawEmerg,Math.max(0,ECAP-cumEmerg)));
+  const emergDiff=rawEmerg-emergAlloc;
+  return {
+    tax:      Math.round(acv*basePcts.tax/100),
+    infra:    Math.round(acv*infraPct/100),
+    emergency:emergAlloc,
+    reinvest: Math.round(acv*reinvestPct/100)+(setup||0)+emergDiff,
+    service:  Math.round(acv*basePcts.service/100),
+    personal: Math.round(acv*personalPct/100),
+  };
+}
+
+// cumulative now tracks running ARR and emergency to pass correctly
 function cumulative(){
   const t={tax:0,infra:0,emergency:0,reinvest:0,service:0,personal:0};
-  payments.forEach((p,i)=>{
-    const a=allocate(p.acv||0,p.setup||0,i+1);
+  let runningEmerg=0,runningARR=0;
+  payments.filter(p=>!p.isDryRun).forEach(p=>{
+    const a=allocate(p.acv||0,p.setup||0,runningARR,runningEmerg);
     Object.keys(t).forEach(k=>{t[k]+=(a[k]||0)});
+    runningEmerg+=a.emergency;
+    runningARR+=(p.acv||0);
   });
   return t;
 }
 
 function getNetProfit(){
   const arr=getARR();
+  const cl=getClients();
+  const infra=getInfraTier(cl).monthly*12;
   const tax=Math.round(arr*0.25);
-  const infra=INFRA*12;
   return Math.max(0,arr-tax-infra);
 }
 
@@ -574,11 +739,13 @@ function fmtF(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
 // ── VERDICT ──
 function verdict(cl,arr){
   if(!cl)return{t:'Log your first payment to get a financial verdict.',s:'',c:'var(--text3)'};
-  if(arr<INFRA*12)return{t:"ARR doesn't cover 12 months of infra. You're burning money. Do not proceed until client 2 is confirmed paying.",s:'STAGE: LOSS',c:'var(--red)'};
-  if(cl===1)return{t:"One paying client is proof of concept — not a business. Every rupee of reinvestment goes toward client 2 and 3. Nothing else. Use the CA.",s:'STAGE: PROOF OF CONCEPT',c:'var(--amber)'};
-  if(cl<5)return{t:`${cl} clients — traction forming. Personal at ${getPersonalPct(cl)}%. Push reinvestment into CA referrals. Don't touch the product — it works.`,s:'STAGE: EARLY TRACTION',c:'var(--amber)'};
-  if(cl<15)return{t:`${cl} clients. Emergency fund likely capped — check Buckets. Raise ACV. You're undercharging at this proven scale.`,s:'STAGE: GROWING',c:'var(--accent)'};
-  return{t:`${cl} clients. Infra is a rounding error. Raise ACV to ₹48K+ minimum, launch Shift Tracker bundle, hire first sales person from reinvestment.`,s:'STAGE: SCALING',c:'var(--green)'};
+  if(arr<INFRA*12)return{t:"ARR doesn't cover 12 months of infra. You're at a loss. Do not proceed until client 2 is confirmed paying.",s:'STAGE: LOSS',c:'var(--red)'};
+  if(cl===1)return{t:`One paying client is proof of concept — not a business. At ${fmtF(arr)} ARR your personal is ${fmtF(Math.round(arr*getPersonalPct(1)/100/12))}/mo. Every rupee of reinvestment goes toward client 2 and 3. Use the CA.`,s:'STAGE: PROOF OF CONCEPT',c:'var(--amber)'};
+  if(cl<5)return{t:`${cl} clients, ${fmt(arr)} ARR. Personal at ${getPersonalPct(cl)}% = ${fmtF(Math.round(arr*getPersonalPct(cl)/100/12))}/mo. Push reinvestment into CA referrals. Don't touch the product.`,s:'STAGE: EARLY TRACTION',c:'var(--amber)'};
+  if(cl<10)return{t:`${cl} clients. At Lite pricing (${fmtF(44000)}/yr Y2+) you're at ${fmt(cl*44000)} renewal ARR — solid. Check emergency fund cap. Start thinking about Pro upsell conversations.`,s:'STAGE: GROWING',c:'var(--accent)'};
+  if(cl<20)return{t:`${cl} clients. You're at Phase 1 MIDC dominance territory. Emergency cap hit — redirect 10% to reinvestment. Push Pro and Enterprise upsells to existing base. Churn is now your enemy.`,s:'STAGE: PHASE 1',c:'var(--accent)'};
+  if(cl<50)return{t:`${cl} clients, ${fmt(arr)} ARR. At 50 clients Enterprise-all: ₹86.5L Year 1, ₹57L Year 2+. Retention beats acquisition now — every churned client costs you all future renewals, not just one year.`,s:'STAGE: SCALING',c:'var(--green)'};
+  return{t:`${cl} clients. You're at or near Phase 1 target. ₹25L ARR milestone is real. Start Phase 2 planning: Pune/Nashik/Aurangabad MIDC, first sales hire from reinvestment bucket.`,s:'STAGE: PHASE 1 COMPLETE',c:'var(--green)'};
 }
 
 // ── RENDER: DASHBOARD ──
@@ -586,6 +753,8 @@ function renderDash(){
   const arr=getARR(),cl=getClients(),mo=Math.round(arr/12);
   const mg=arr?Math.round(((arr-INFRA*12)/arr)*100):null;
   const net=getNetProfit();
+  const setupTotal=getSetupTotal();
+  const totalCash=arr+setupTotal;
   document.getElementById('d-arr').textContent=fmt(arr);
   document.getElementById('d-mo').textContent=fmt(mo);
   document.getElementById('d-cl').textContent=cl;
@@ -598,15 +767,23 @@ function renderDash(){
   // Tax deadlines
   renderTaxGrid();
 
-  // Bucket bars
+  // Bucket bars (latest real payment)
   const be=document.getElementById('bbars-empty'),bb=document.getElementById('bbars');
-  if(!payments.length){be.style.display='block';bb.innerHTML=''}
+  const realPayments=payments.filter(p=>!p.isDryRun);
+  if(!realPayments.length){be.style.display='block';bb.innerHTML=''}
   else{
     be.style.display='none';
-    const lt=payments[payments.length-1];
-    const al=allocate(lt.acv||0,lt.setup||0,payments.length);
+    const lt=realPayments[realPayments.length-1];
+    // running ARR = sum of all real payments except the last one
+    const runningARRBeforeLast=realPayments.slice(0,-1).reduce((s,p)=>s+(p.acv||0),0);
+    const al=allocate(lt.acv||0,lt.setup||0,runningARRBeforeLast);
     const tot=(lt.acv||0)+(lt.setup||0);
-    bb.innerHTML=B.map(b=>{
+    const infraTier=getInfraTier(cl);
+    bb.innerHTML=`<div style="background:#1a1000;border:1px solid #3a2000;border-radius:var(--r);padding:7px 10px;margin-bottom:12px;font-size:11px;color:#f59e0b;display:flex;justify-content:space-between;align-items:center">
+      <span>Current infra tier: <strong>${infraTier.label}</strong> · ${infraTier.detail}</span>
+      <span style="font-family:var(--fm);font-weight:600;flex-shrink:0;margin-left:12px">${fmtF(infraTier.monthly)}/mo</span>
+    </div>`+
+    B.map(b=>{
       const a=al[b.k]||0,pct=tot?Math.round((a/tot)*100):0;
       return `<div class="bbr"><div class="bbl">${b.n}</div><div class="bbt"><div class="bbf" style="width:${pct}%;background:${b.c}"></div></div><div class="bba">${fmtF(a)}</div></div>`;
     }).join('');
@@ -631,30 +808,39 @@ function renderDash(){
 // ── TAX GRID ──
 function renderTaxGrid(){
   const now=new Date();
-  const year=now.getFullYear();
   const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const fyStartYear=now.getMonth()>=3?now.getFullYear():now.getFullYear()-1;
+  const fyLabel=`FY ${fyStartYear}–${String(fyStartYear+1).slice(2)}`;
+  const DEADLINES=[
+    {month:'Jun',day:15,label:'Q1 Advance Tax',y:fyStartYear},
+    {month:'Sep',day:15,label:'Q2 Advance Tax',y:fyStartYear},
+    {month:'Dec',day:15,label:'Q3 Advance Tax',y:fyStartYear},
+    {month:'Mar',day:15,label:'Q4 Advance Tax',y:fyStartYear+1},
+  ];
   let nextLabel='';let minDays=999;
-
-  const html=TAX_DEADLINES.map(td=>{
-    const y=td.month==='Mar'?year+1:year;
-    const deadline=new Date(y,MONTHS[td.month],td.day);
+  const html=DEADLINES.map(td=>{
+    const deadline=new Date(td.y,MONTHS[td.month],td.day);
     const diffMs=deadline-now;
     const diffDays=Math.ceil(diffMs/(1000*60*60*24));
-    const key=`${td.month}_${y}`;
+    const key=`${td.month}_${td.y}`;
     const isPaid=!!taxPaid[key];
     const isUrgent=!isPaid&&diffDays<=30&&diffDays>0;
     const isPast=diffDays<0&&!isPaid;
-    if(!isPaid&&diffDays>0&&diffDays<minDays){minDays=diffDays;nextLabel=`${diffDays}d to ${td.month} deadline`}
+    if(!isPaid&&diffDays>0&&diffDays<minDays){minDays=diffDays;nextLabel=`${diffDays}d to ${td.month} ${td.y} deadline`}
     const cls=isPaid?'tc-item paid':isUrgent?'tc-item urgent':'tc-item';
     const daysText=isPaid?'✓ PAID':isPast?'OVERDUE':diffDays===0?'TODAY!':diffDays+'d left';
     return `<div class="${cls}" onclick="toggleTaxPaid('${key}')">
       <div class="tc-num">${td.month} ${td.day}</div>
       <div class="tc-mo">${td.label}</div>
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:1px">${td.y}</div>
       <div class="tc-days" style="color:${isPaid?'var(--green)':isPast?'var(--red)':isUrgent?'var(--amber)':'var(--text3)'}">${daysText}</div>
     </div>`;
   }).join('');
+  // Update FY label in tax card header
+  const tcLabel=document.querySelector('.tc-label');
+  if(tcLabel)tcLabel.innerHTML=`<svg viewBox="0 0 24 24" width="12" height="12" style="stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Advance Tax · ${fyLabel} · Click to mark paid`;
   document.getElementById('tax-grid').innerHTML=html;
-  document.getElementById('sb-tax-label').textContent=nextLabel||'All deadlines clear';
+  document.getElementById('sb-tax-label').textContent=nextLabel||`${fyLabel} — all clear ✓`;
 }
 
 window.toggleTaxPaid=function(key){
@@ -662,24 +848,44 @@ window.toggleTaxPaid=function(key){
   toast(taxPaid[key]?'Marked as paid ✓':'Marked as unpaid');
 };
 
-// ── RENDER: BUCKETS ──
 function renderBuckets(){
   const cum=cumulative();
   const cl=getClients();
+  const arr=getARR();
+  const personalPct=getPersonalPctByARR(arr);
+  const infraPct=getInfraPct(cl,arr);
   const emergCap=getCumEmergency()>=ECAP;
-  document.getElementById('bkg').innerHTML=B.map(b=>{
+  const infraTier=getInfraTier(cl);
+  const bkg=document.getElementById('bkg');
+  if(!bkg)return;
+
+  if(cl===0){
+    bkg.innerHTML=`<div style="grid-column:1/-1;background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:2rem;text-align:center">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:.5rem">No real payments logged yet.</div>
+      <div style="font-size:11px;color:var(--text3)">Buckets update the moment you log a real payment. Dry run entries are intentionally excluded.</div>
+    </div>`;
+    return;
+  }
+
+  bkg.innerHTML=B.map(b=>{
     const amt=cum[b.k]||0;
     const capHit=b.k==='emergency'&&emergCap;
     const moNotional=Math.round(amt/12);
+    const pctLabel=b.k==='infra'?`${infraPct}% (tiered · ${infraTier.label})`:b.k==='personal'?`${personalPct}% (ARR-scaled)`:b.pct+'%';
+    let extraBadge='';
+    if(b.k==='infra')extraBadge=`<div class="bkcap" style="background:#1a1000;color:#f59e0b">Tier: ${infraTier.label} · ${fmtF(infraTier.monthly)}/mo · Annual: ${fmtF(infraTier.monthly*12)}</div>`;
+    if(b.k==='service')extraBadge=`<div class="bkcap" style="background:#1a0010;color:#ec4899">Monthly drain ceiling: ${fmtF(SERVICE_MONTHLY_CEILING)} · beyond = billable</div>`;
+    if(b.k==='personal'){const nt=PERSONAL_ARR_TIERS.find(t=>arr<t.minARR);if(nt)extraBadge=`<div class="bkcap" style="background:#0e0017;color:#a855f7">Next tier ${nt.pct}% unlocks at ${fmt(nt.minARR)} ARR</div>`;}
     return `<div class="bkc">
       <div class="bktop" style="background:${b.c}"></div>
       <div class="bkl" style="color:${b.c}">${b.n}</div>
       <div class="bkv">${fmtF(amt)}</div>
-      <div class="bkp">${b.k==='personal'?getPersonalPct(cl)+'%':b.pct+'%'} of each payment${b.k==='reinvest'?' + 100% setup fees':''}</div>
+      <div class="bkp">${pctLabel} of each payment${b.k==='reinvest'?' + 100% setup fees':''}</div>
       <div class="bk-monthly">${fmtF(moNotional)}/mo notional</div>
       ${capHit?`<div class="bkcap" style="background:rgba(200,241,53,.1);color:var(--accent)">✓ Cap hit — overflow → reinvestment</div>`:''}
       ${b.cap&&!capHit?`<div class="bkcap" style="background:var(--bg2);color:var(--text3)">${fmtF(ECAP-getCumEmergency())} to cap</div>`:''}
-      <div class="bkd">${b.d}<br/><br/><em style="color:var(--text3)">${b.r}</em></div>
+      ${extraBadge}
+      <div class="bkd">${b.d}<em>${b.r}</em></div>
     </div>`;
   }).join('');
 }
@@ -701,7 +907,7 @@ function renderReinvest(){
     return `<div class="ri-item">
       <span class="ri-tag">spend</span>
       <div style="flex:1"><div class="ri-name">${r.what||'—'}</div><div class="ri-note">${r.reason||'No reason logged'} · ${dt}</div></div>
-      <div style="text-align:right"><div class="ri-amt">${fmtF(r.amt)}</div><button class="hdel" onclick="deleteReinvest(${idx})" style="margin-top:4px">delete</button></div>
+      <div style="text-align:right"><div class="ri-amt">${fmtF(r.amt)}</div><button class="hdel" data-ridx="${idx}" onclick="deleteReinvest(this)" style="margin-top:4px">delete</button></div>
     </div>`;
   }).join('');
 }
@@ -725,27 +931,40 @@ window.logReinvestSpend=function(){
   document.getElementById('ri-what').value='';document.getElementById('ri-amt').value='';document.getElementById('ri-reason').value='';
   toast(`Spend of ${fmtF(amt)} logged.`);
 };
-window.deleteReinvest=function(idx){
-  if(!confirm('Delete this spend entry?'))return;
-  reinvestSpends.splice(idx,1);save();renderReinvest();toast('Deleted.');
+window.deleteReinvest=function(btn){
+  const idx=parseInt(btn.dataset.ridx);
+  if(isNaN(idx)||idx<0||idx>=reinvestSpends.length){toast('Entry not found.');return}
+  if(btn.dataset.confirming==='1'){
+    reinvestSpends.splice(idx,1);save();renderReinvest();toast('Deleted.');
+  } else {
+    btn.dataset.confirming='1';
+    btn.textContent='tap again to confirm';
+    btn.style.borderColor='var(--red)';btn.style.color='var(--red)';
+    setTimeout(()=>{if(btn.dataset.confirming==='1'){btn.dataset.confirming='0';btn.textContent='delete';btn.style.borderColor='';btn.style.color=''}},3000);
+  }
 };
 
-// ── RENDER: HISTORY ──
 function renderHistory(){
   const list=document.getElementById('hist-list'),empty=document.getElementById('hist-empty'),sub=document.getElementById('hist-sub');
   if(!payments.length){list.innerHTML='';empty.style.display='block';sub.textContent='No payments logged yet.';return}
   empty.style.display='none';
-  const totalSetup=payments.reduce((s,p)=>s+(p.setup||0),0);
-  sub.textContent=`${payments.length} payment${payments.length!==1?'s':''} · ARR ${fmt(getARR())} · Setup fees ${fmtF(totalSetup)}`;
-  list.innerHTML=[...payments].reverse().map((p,ri)=>{
-    const idx=payments.length-1-ri;
+  const realCount=payments.filter(p=>!p.isDryRun).length;
+  sub.textContent=`${realCount} real payment${realCount!==1?'s':''} · Recurring ARR ${fmt(getARR())} · Setup fees ${fmtF(getSetupTotal())} · Total cash ${fmtF(getARR()+getSetupTotal())}`;
+  // Store original indices BEFORE reversing so delete always hits the right entry
+  const indexed=payments.map((p,i)=>({...p,_origIdx:i}));
+  list.innerHTML=indexed.reverse().map(p=>{
+    const i=p._origIdx;
     const tot=(p.acv||0)+(p.setup||0);
     const dt=p.date?new Date(p.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
-    return `<div class="hi">
+    const prodLabel=p.product==='ent'?'Enterprise':p.product==='p1'?'P1':'P2';
+    const tierLabel=p.tier==='pro'?'Pro':p.product==='p1'?'Basic':'Lite';
+    const productTag=p.product?`${prodLabel} ${p.product!=='ent'?tierLabel:''} · Y${p.year||1}`:'';
+    const dryTag=p.isDryRun?`<span style="font-family:var(--fm);font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(34,197,94,.12);color:var(--green);margin-left:6px">DRY RUN</span>`:'';
+    return `<div class="hi" style="${p.isDryRun?'opacity:.7;border-left:2px solid var(--green);padding-left:10px':''}">
       <span class="hit ${p.type||'new'}">${p.type||'new'}</span>
-      <div style="flex:1"><div class="hic">${p.client||'Unknown'}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">ACV ${fmtF(p.acv)} · Setup ${fmtF(p.setup||0)} · ${p.notes||'No notes'}</div></div>
-      <div style="text-align:right"><div class="hia">${fmtF(tot)}</div><div class="hid">${dt}</div></div>
-      <button class="hdel" onclick="del(${idx})">delete</button>
+      <div style="flex:1"><div class="hic">${p.client||'Unknown'}${dryTag}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">${productTag} · ACV ${fmtF(p.acv)} · Setup ${fmtF(p.setup||0)} · ${p.notes||'No notes'}</div></div>
+      <div style="text-align:right"><div class="hia" style="${p.isDryRun?'color:var(--green)':''}">${fmtF(tot)}</div><div class="hid">${dt}</div></div>
+      <button class="hdel" data-idx="${i}" onclick="del(this)">${p.isDryRun?'delete dry run':'delete'}</button>
     </div>`;
   }).join('');
 }
@@ -791,44 +1010,308 @@ function renderRules(){
     </div>`).join('');
 }
 
+// ── CHURN ──
+const CHURN_ACV={p2_lite:44000,p2_pro:70000,p1_lite:44000,p1_pro:70000,ent:114000};
+const CHURN_LABELS={p2_lite:'P2 Lite',p2_pro:'P2 Pro',p1_lite:'P1 Basic',p1_pro:'P1 Pro',ent:'Enterprise'};
+const CHURN_REASON_LABELS={price:'Price',product:'Product gap',competitor:'Competitor',closure:'Biz closed',support:'Support',other:'Other'};
+
+function getChurnedARR(){return churns.reduce((s,c)=>s+(CHURN_ACV[c.product]||0),0)}
+
+function renderChurn(){
+  const churnedARR=getChurnedARR();
+  const activeARR=getARR();
+  const netARR=activeARR-churnedARR;
+  const churnRate=activeARR>0?Math.round((churnedARR/activeARR)*100):0;
+  // Stats
+  document.getElementById('churn-stats').innerHTML=`
+    <div class="sc"><div class="sl">Churned ARR</div><div class="sv" style="color:var(--red)">${fmt(churnedARR)}</div><div class="ss">lost annually</div></div>
+    <div class="sc"><div class="sl">Net ARR</div><div class="sv" style="color:${netARR>=0?'var(--accent)':'var(--red)'}">${fmt(netARR)}</div><div class="ss">active minus churned</div></div>
+    <div class="sc"><div class="sl">Churn Rate</div><div class="sv" style="color:${churnRate>10?'var(--red)':churnRate>5?'var(--amber)':'var(--green)'}">${churnRate}%</div><div class="ss">of total ARR</div></div>
+    <div class="sc"><div class="sl">Churned Clients</div><div class="sv" style="color:var(--text)">${churns.length}</div><div class="ss">total logged</div></div>`;
+
+  const list=document.getElementById('churn-list');
+  const empty=document.getElementById('churn-empty');
+  const sub=document.getElementById('churn-sub');
+  if(!churns.length){list.innerHTML='';empty.style.display='block';sub.textContent='No churn logged. Keep it that way.';return}
+  empty.style.display='none';
+  sub.textContent=`${churns.length} churned · ${fmt(churnedARR)} ARR lost · Top reason: ${getMostCommonReason()}`;
+
+  const indexed=churns.map((c,i)=>({...c,_i:i}));
+  list.innerHTML=indexed.reverse().map(c=>{
+    const acv=CHURN_ACV[c.product]||0;
+    const dt=c.date?new Date(c.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    return `<div class="hi">
+      <span class="hit" style="background:rgba(255,68,68,.12);color:var(--red)">churned</span>
+      <div style="flex:1">
+        <div class="hic">${c.client||'Unknown'}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">${CHURN_LABELS[c.product]||c.product} · ${CHURN_REASON_LABELS[c.reason]||c.reason} · ${c.notes||'No notes'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--fm);font-size:13px;font-weight:600;color:var(--red)">-${fmtF(acv)}/yr</div>
+        <div class="hid">${dt}</div>
+      </div>
+      <button class="hdel" data-cidx="${c._i}" onclick="deleteChurn(this)">delete</button>
+    </div>`;
+  }).join('');
+}
+
+function getMostCommonReason(){
+  if(!churns.length)return 'none';
+  const counts={};churns.forEach(c=>{counts[c.reason]=(counts[c.reason]||0)+1});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  return CHURN_REASON_LABELS[top[0]]||top[0];
+}
+
+window.openChurnModal=function(){
+  document.getElementById('churn-modal').classList.add('show');
+  document.getElementById('ch-date').value=new Date().toISOString().split('T')[0];
+};
+window.closeChurnModal=function(){document.getElementById('churn-modal').classList.remove('show')};
+window.logChurn=function(){
+  const client=document.getElementById('ch-client').value.trim();
+  const product=document.getElementById('ch-product').value;
+  const date=document.getElementById('ch-date').value;
+  const reason=document.getElementById('ch-reason').value;
+  const notes=document.getElementById('ch-notes').value.trim();
+  if(!client){toast('Enter the client name.');return}
+  churns.push({client,product,date,reason,notes,ts:Date.now()});
+  save();renderChurn();closeChurnModal();
+  document.getElementById('ch-client').value='';document.getElementById('ch-notes').value='';
+  toast(`${client} logged as churned — ${fmtF(CHURN_ACV[product]||0)}/yr ARR lost.`);
+};
+window.deleteChurn=function(btn){
+  const idx=parseInt(btn.dataset.cidx);
+  if(isNaN(idx)||idx<0||idx>=churns.length){toast('Entry not found.');return}
+  if(btn.dataset.confirming==='1'){
+    churns.splice(idx,1);save();renderChurn();toast('Deleted.');
+  } else {
+    btn.dataset.confirming='1';
+    btn.textContent='tap again to confirm';
+    btn.style.borderColor='var(--red)';btn.style.color='var(--red)';
+    setTimeout(()=>{if(btn.dataset.confirming==='1'){btn.dataset.confirming='0';btn.textContent='delete';btn.style.borderColor='';btn.style.color=''}},3000);
+  }
+};
+window.runDryRun=function(){
+  // Compute allocation for P2 Lite Y1 = ₹64K (setup ₹20K + ACV ₹44K)
+  const dryACV=44000,drySetup=20000;
+  const dryARR=getARR()+dryACV; // what ARR would be if this were real
+  const dryPersonalPct=getPersonalPctByARR(dryARR);
+  const dryInfraPct=getInfraPct(getClients(),dryARR);
+  const al=allocate(dryACV,drySetup,dryARR,getCumEmergency());
+  const total=dryACV+drySetup;
+
+  // Build result HTML
+  const rows=B.map(b=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1a2a00">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:7px;height:7px;border-radius:50%;background:${b.c};flex-shrink:0"></div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">${b.n}</div>
+          <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?dryPersonalPct+'%':b.k==='infra'?dryInfraPct+'% (tiered)':b.pct+'%'}${b.k==='reinvest'?' + setup ₹20K':''}</div>
+        </div>
+      </div>
+      <div style="font-family:var(--fm);font-size:13px;font-weight:600;color:${b.c}">${fmtF(al[b.k]||0)}</div>
+    </div>`).join('');
+
+  // Show in overlay on dashboard
+  let overlay=document.getElementById('dryrun-result');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='dryrun-result';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML=`
+    <div style="background:#0d1a00;border:1px solid #2a4a00;border-radius:var(--rl);padding:1.75rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">Dry Run — P2 Lite · Year 1</div>
+          <div style="font-family:var(--fm);font-size:20px;font-weight:600;color:var(--accent)">₹64,000 total received</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">Setup ₹20,000 → 100% reinvestment · ACV ₹44,000 → split below</div>
+        </div>
+        <button onclick="document.getElementById('dryrun-result').remove()" style="background:none;border:1px solid #2a4a00;color:var(--text3);border-radius:var(--r);padding:6px 12px;cursor:pointer;font-family:var(--fh);font-size:12px">Close</button>
+      </div>
+      ${rows}
+      <div style="margin-top:1rem;padding:10px 12px;background:#0a1a00;border-radius:var(--r);font-size:11px;color:var(--text3)">
+        ✓ This is what your buckets will show after your first real P2 Lite Y1 payment. If these numbers look right, you're ready. Personal at ${dryPersonalPct}% · Infra at ${dryInfraPct}% (ARR-tiered).
+      </div>
+      <div style="margin-top:.75rem;padding:10px 12px;background:#1a0000;border-radius:var(--r);font-size:11px;color:#ff8888">
+        Note: This is a preview only — nothing was saved. Real totals in Buckets remain unchanged until you log an actual payment.
+      </div>
+    </div>`;
+  overlay.style.display='flex';
+};
+
+// ── VERDICT ──
+function verdict(cl,arr){
+  const personalPct=getPersonalPctByARR(arr);
+  const infraTier=getInfraTier(cl);
+  if(!cl)return{t:'Log your first payment to get a financial verdict.',s:'',c:'var(--text3)'};
+  if(arr<infraTier.monthly*12)return{t:`ARR ${fmtF(arr)} doesn\'t cover 12 months of infra at your tier (${fmtF(infraTier.monthly*12)}/yr). You\'re at a loss. Confirm client 2 before spending anything.`,s:'STAGE: LOSS',c:'var(--red)'};
+  if(cl===1)return{t:`One paying client, ${fmt(arr)} ARR. Personal at ${personalPct}% = ${fmtF(Math.round(arr*personalPct/100/12))}/mo director salary. Every rupee of reinvestment goes toward client 2 and 3. Use the CA.`,s:'STAGE: PROOF OF CONCEPT',c:'var(--amber)'};
+  if(arr<200000)return{t:`${cl} clients, ${fmt(arr)} ARR. Personal still at ${personalPct}% — ARR milestone for 18% is ₹2L. Push reinvestment into CA referrals and MIDC visits.`,s:'STAGE: EARLY TRACTION',c:'var(--amber)'};
+  if(arr<500000)return{t:`${fmt(arr)} ARR — crossed ₹2L milestone. Personal now ${personalPct}%. Emergency cap: ${fmtF(getCumEmergency())} of ₹50K. Start Pro upsell conversations with Lite clients.`,s:'STAGE: GROWING',c:'var(--accent)'};
+  if(arr<2500000)return{t:`${fmt(arr)} ARR. Personal at max ${personalPct}%. Churn is now your biggest enemy. Every lost client costs all future renewals. Retention > acquisition above 20 clients.`,s:'STAGE: PHASE 1',c:'var(--accent)'};
+  return{t:`${fmt(arr)} ARR. Phase 1 complete. ₹25L milestone real. Start Phase 2: Pune/Nashik/Aurangabad MIDC, first sales hire from reinvestment bucket.`,s:'STAGE: PHASE 1 COMPLETE',c:'var(--green)'};
+}
+
 // ── LOG PAYMENT ──
 window.logPayment=function(){
   const cl=document.getElementById('l-client').value.trim();
-  const acv=parseFloat(document.getElementById('l-acv').value)||0;
-  const setup=parseFloat(document.getElementById('l-setup').value)||0;
   const date=document.getElementById('l-date').value;
   const type=document.getElementById('l-type').value;
   const notes=document.getElementById('l-notes').value.trim();
+  const overrideVal=document.getElementById('l-override').value;
+  const product=document.getElementById('l-product').value;
+  const tier=document.getElementById('l-tier').value;
+  const year=document.getElementById('l-year').value;
   if(!cl){toast('Enter a client name.');return}
-  if(!acv){toast('Enter the annual contract value.');return}
-  payments.push({client:cl,acv,setup,date,type,notes,ts:Date.now()});
-  save();renderAll();
-  document.getElementById('l-client').value='';document.getElementById('l-acv').value='';
-  document.getElementById('l-setup').value='';document.getElementById('l-notes').value='';
-  document.getElementById('prev-content').style.display='none';document.getElementById('prev-empty').style.display='block';
-  toast(`${cl} logged — ${fmtF(acv+setup)} allocated.`);
+  const p=getActivePricing();
+  let setup=p.setup,acv=p.acv;
+  if(overrideVal&&parseFloat(overrideVal)>0){
+    const ov=parseFloat(overrideVal);
+    setup=year==='1'?p.setup:0;
+    acv=ov-setup;
+    if(acv<0){toast('Override is less than setup fee alone.');return}
+  }
+  payments.push({client:cl,acv,setup,date,type,notes,product,tier,year,ts:Date.now()});
+  save();
+
+  // Compute allocation for the result panel
+  const newARR=getARR();
+  const newCl=getClients();
+  const runningARRBefore=newARR-acv;
+  const al=allocate(acv,setup,runningARRBefore);
+  const total=acv+setup;
+  const infraTier=getInfraTier(newCl);
+
+  // Show allocation result panel
+  showAllocationResult(cl,total,acv,setup,al,newARR,newCl,infraTier);
+
+  // Update all views in background
+  renderAll();
+
+  // Clear form
+  document.getElementById('l-client').value='';
+  document.getElementById('l-override').value='';
+  document.getElementById('l-notes').value='';
+  document.getElementById('l-year').value='1';
+  onPricingChange();
 };
 
-window.del=function(idx){
-  if(!confirm(`Delete payment from "${payments[idx].client}"?`))return;
-  payments.splice(idx,1);save();renderAll();toast('Payment deleted.');
+function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier){
+  // Remove existing result if any
+  const existing=document.getElementById('log-result');
+  if(existing)existing.remove();
+
+  const personalPct=getPersonalPctByARR(newARR);
+  const rows=B.map(b=>{
+    const amt=al[b.k]||0;
+    const pct=acv?Math.round((amt/total)*100):0;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${b.c};flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${b.n}</div>
+        <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?personalPct+'%':b.k==='infra'?getInfraPct(newCl,newARR)+'% (tiered)':b.pct+'%'}${b.k==='reinvest'&&setup?' + setup fee':''}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--fm);font-size:13px;font-weight:600;color:${b.c}">${fmtF(amt)}</div>
+        <div style="font-size:10px;color:var(--text3)">${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const div=document.createElement('div');
+  div.id='log-result';
+  div.style.cssText='margin-top:1rem;animation:fi .2s ease';
+  div.innerHTML=`
+    <div style="background:#001a08;border:1px solid #003a18;border-radius:var(--rl);padding:1.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">✓ Payment logged — buckets updated</div>
+          <div style="font-family:var(--fm);font-size:20px;font-weight:600;color:var(--accent)">${fmtF(total)} allocated</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${client} · Setup ${fmtF(setup)} → reinvestment · ACV ${fmtF(acv)} → split below</div>
+        </div>
+        <button onclick="document.getElementById('log-result').remove()" style="background:none;border:1px solid #003a18;color:var(--text3);border-radius:var(--r);padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--fh)">Dismiss</button>
+      </div>
+      ${rows}
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <div style="background:var(--bg2);border-radius:var(--r);padding:8px 10px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">New ARR</div>
+          <div style="font-family:var(--fm);font-size:14px;font-weight:600;color:var(--accent)">${fmt(newARR)}</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--r);padding:8px 10px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Clients</div>
+          <div style="font-family:var(--fm);font-size:14px;font-weight:600;color:var(--text)">${newCl}</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--r);padding:8px 10px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Infra tier</div>
+          <div style="font-family:var(--fm);font-size:12px;font-weight:600;color:var(--amber)">${infraTier.label}</div>
+        </div>
+      </div>
+      <div style="margin-top:.75rem;display:flex;gap:8px">
+        <button onclick="switchView('buckets')" style="flex:1;background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.2);color:var(--accent);border-radius:var(--r);padding:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--fh)">View Buckets →</button>
+        <button onclick="switchView('dashboard')" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--fh)">Dashboard →</button>
+      </div>
+    </div>`;
+
+  // Insert after the log grid
+  const logGrid=document.querySelector('#view-log .lg');
+  if(logGrid)logGrid.after(div);
+}
+
+window.del=function(btn){
+  const idx=parseInt(btn.dataset.idx);
+  if(isNaN(idx)||idx<0||idx>=payments.length){toast('Entry not found — try refreshing.');return}
+  const p=payments[idx];
+  // Inline confirm — works on all browsers including mobile WebViews
+  if(btn.dataset.confirming==='1'){
+    payments.splice(idx,1);
+    save();renderAll();
+    toast('Payment deleted.');
+  } else {
+    btn.dataset.confirming='1';
+    btn.textContent='tap again to confirm';
+    btn.style.borderColor='var(--red)';
+    btn.style.color='var(--red)';
+    setTimeout(()=>{
+      if(btn.dataset.confirming==='1'){
+        btn.dataset.confirming='0';
+        btn.textContent=p.isDryRun?'delete dry run':'delete';
+        btn.style.borderColor='';btn.style.color='';
+      }
+    },3000);
+  }
 };
 
 // ── PREVIEW ──
 window.preview=function(){
-  const acv=parseFloat(document.getElementById('l-acv').value)||0;
-  const setup=parseFloat(document.getElementById('l-setup').value)||0;
+  const p=getActivePricing();
+  const overrideVal=document.getElementById('l-override')?.value;
+  let setup=p.setup,acv=p.acv;
+  if(overrideVal&&parseFloat(overrideVal)>0){
+    const ov=parseFloat(overrideVal);
+    setup=p.setup;acv=ov-setup;
+    if(acv<0){acv=0}
+  }
+  const total=setup+acv;
   const pc=document.getElementById('prev-content'),pe=document.getElementById('prev-empty');
-  if(!acv){pc.style.display='none';pe.style.display='block';return}
   pc.style.display='block';pe.style.display='none';
-  const cl=getClients()+1;
-  document.getElementById('prev-total').textContent=`Total: ${fmtF(acv+setup)} · Personal at ${getPersonalPct(cl)}%`;
-  const al=allocate(acv,setup,cl);
-  document.getElementById('prev-rows').innerHTML=B.map(b=>`
-    <div class="prw">
-      <div class="prl"><div class="prd" style="background:${b.c}"></div><div><div class="prn">${b.n}</div><div class="prp">${b.k==='personal'?getPersonalPct(cl)+'%':b.pct+'%'}${b.k==='reinvest'&&setup?' + setup fee':''}</div></div></div>
+  const previewARR=getARR()+acv;
+  const previewCl=getClients()+1;
+  const personalPct=getPersonalPctByARR(previewARR);
+  const infraPct=getInfraPct(previewCl,previewARR);
+  document.getElementById('prev-total').textContent=`Day-1 total: ${fmtF(total)}`;
+  document.getElementById('prev-split').textContent=`Setup ${fmtF(setup)} → 100% reinvestment · ACV ${fmtF(acv)} → split below · Personal ${personalPct}% · Infra ${infraPct}% (tiered)`;
+  const al=allocate(acv,setup,previewARR);
+  document.getElementById('prev-rows').innerHTML=B.map(b=>{
+    const livePct=b.k==='personal'?personalPct:b.k==='infra'?infraPct:b.pct;
+    const pctLabel=b.k==='infra'?`${infraPct}% (tiered)`:b.k==='personal'?`${personalPct}% (ARR-scaled)`:b.pct+'%';
+    return `<div class="prw">
+      <div class="prl"><div class="prd" style="background:${b.c}"></div><div><div class="prn">${b.n}</div><div class="prp">${pctLabel}${b.k==='reinvest'&&setup?' + setup ₹'+Math.round(setup/1000)+'K':''}</div></div></div>
       <div class="pra" style="color:${b.c}">${fmtF(al[b.k]||0)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 };
 
 // ── EXPORT / IMPORT ──
@@ -847,9 +1330,10 @@ window.importData=function(e){
   reader.onload=function(ev){
     try{
       const d=JSON.parse(ev.target.result);
-      if(!confirm(`Import ${(d.payments||[]).length} payments? This will merge with existing data.`))return;
+      if(!confirm(`Import ${(d.payments||[]).length} payments and ${(d.churns||[]).length} churn entries? This will merge with existing data.`))return;
       payments=[...payments,...(d.payments||[])];
       reinvestSpends=[...reinvestSpends,...(d.reinvestSpends||[])];
+      churns=[...churns,...(d.churns||[])];
       taxPaid={...taxPaid,...(d.taxPaid||{})};
       pvtChecks={...pvtChecks,...(d.pvtChecks||{})};
       save();renderAll();toast('Data imported successfully.');
@@ -860,7 +1344,12 @@ window.importData=function(e){
 };
 
 // ── RENDER ALL ──
-function renderAll(){renderDash();renderBuckets();renderHistory();renderReinvest();renderPvtLtd();renderRules();}
+function renderAll(){
+  renderDash();renderBuckets();renderHistory();renderReinvest();renderChurn();renderPvtLtd();renderRules();
+  const hasReal=payments.some(p=>!p.isDryRun);
+  const banner=document.getElementById('dryrun-banner');
+  if(banner)banner.style.display=(!hasReal)?'block':'none';
+}
 
 // ── NAV ──
 function switchView(id){
@@ -889,7 +1378,7 @@ if(dd)dd.value=new Date().toISOString().split('T')[0];
 const ds=document.getElementById('dash-date');
 if(ds)ds.textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).toUpperCase();
 
-load();renderAll();
+load();renderAll();setTimeout(onPricingChange,50);
 </script>
 </body>
 </html>
