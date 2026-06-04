@@ -328,12 +328,12 @@ body{display:flex;min-height:100vh}
     </div>
 
     <div class="panel">
-      <div class="ph"><span class="pt">Growth Phases</span><span class="ps">₹925Cr roadmap</span></div>
+      <div class="ph"><span class="pt">Growth Phases</span><span class="ps">₹925Cr roadmap · based on actual pricing</span></div>
       <div class="pht">
-        <div class="phi"><div class="phd" id="pd0"></div><div class="phl">Right now</div><div class="phn">Close clients 2–5</div><div class="phdt">CA referral · one-pager · demo. Product works. Pipeline is the only bottleneck.</div><div class="phtg">Target: 5 paying / 90 days</div></div>
-        <div class="phi"><div class="phd" id="pd1"></div><div class="phl">Phase 1 · Yrs 1–2</div><div class="phn">MIDC Satara dominance</div><div class="phdt">Inventory + Shift Tracker bundle. Silver ₹24K / Gold ₹48K. 30–50 clients.</div><div class="phtg">Target: ₹25L ARR</div></div>
-        <div class="phi"><div class="phd" id="pd2"></div><div class="phl">Phase 2 · Yrs 3–5</div><div class="phn">Multi-MIDC self-serve OS</div><div class="phdt">Pune · Nashik · Aurangabad. Modular subs. Compliance Tracker. First sales hire.</div><div class="phtg">Target: ₹2Cr ARR</div></div>
-        <div class="phi"><div class="phd" id="pd3"></div><div class="phl">Phase 3 · Yrs 6–10</div><div class="phn">UK &amp; global arbitrage</div><div class="phdt">Same product. £1,000–1,500/mo. $10M ARR → 10–15x PE multiple.</div><div class="phtg">Target: ₹925Cr exit</div></div>
+        <div class="phi"><div class="phd" id="pd0"></div><div class="phl">Right now</div><div class="phn">Land clients 1–5</div><div class="phdt">P2 Lite ₹64K day-1 (₹44K/yr Y2+) · P1 Lite same. CA referral → one-pager → live demo. Each client = ₹44K ARR recurring forever.</div><div class="phtg">Target: 5 paying · ₹2.2L ARR</div></div>
+        <div class="phi"><div class="phd" id="pd1"></div><div class="phl">Phase 1 · Yrs 1–2</div><div class="phn">MIDC Satara dominance</div><div class="phdt">30–50 clients. Mix of Lite ₹44K + Pro ₹70K + Enterprise ₹1.14L. 50 Lite-all = ₹22L ARR Y2+. Upsell existing base to Pro/Enterprise.</div><div class="phtg">Target: ₹25L ARR</div></div>
+        <div class="phi"><div class="phd" id="pd2"></div><div class="phl">Phase 2 · Yrs 3–5</div><div class="phn">Multi-MIDC expansion</div><div class="phdt">Pune · Nashik · Aurangabad MIDCs. First sales hire from reinvestment bucket. Compliance Tracker add-on. 150+ clients at blended ₹60K ARR = ₹90L ARR.</div><div class="phtg">Target: ₹2Cr ARR</div></div>
+        <div class="phi"><div class="phd" id="pd3"></div><div class="phn">UK &amp; global arbitrage</div><div class="phl">Phase 3 · Yrs 6–10</div><div class="phdt">Same product · £800–1,200/mo per client. 500 UK clients @ £1K = £6M ARR (~₹63Cr). 10–15x PE multiple on SaaS revenue.</div><div class="phtg">Target: ₹925Cr exit</div></div>
       </div>
     </div>
   </section>
@@ -399,7 +399,7 @@ body{display:flex;min-height:100vh}
           <div id="prev-rows"></div>
           <div class="prule" style="margin-top:.75rem">
             <svg viewBox="0 0 24 24" width="13" height="13" style="stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Setup fee → 100% reinvestment. ACV split across all buckets. Personal % auto-adjusts.
+            First client setup → 100% Infra & Ops. Client 2+ setup → 100% Reinvestment. ACV always splits across all buckets.
           </div>
         </div>
       </div>
@@ -408,7 +408,7 @@ body{display:flex;min-height:100vh}
 
   <!-- ── BUCKETS ── -->
   <section class="view" id="view-buckets">
-    <div class="vh"><div class="vh-left"><h1 class="vt">Buckets</h1><span class="vs">Cumulative totals · emergency auto-redirects after ₹50K</span></div></div>
+    <div class="vh"><div class="vh-left"><h1 class="vt">Buckets</h1><span class="vs">Cumulative totals · 1st client setup → Infra · client 2+ setup → Reinvest · emergency caps at ₹50K</span></div></div>
     <div class="bkg" id="bkg"></div>
   </section>
 
@@ -568,7 +568,7 @@ const B=[
   {k:'tax',     n:'Tax Reserve',              pct:25, c:'#ff4444', d:'Transfer to separate account instantly. Advance tax: Jun·Sep·Dec·Mar.',           r:'Legally not yours. Do not rationalise.'},
   {k:'infra',   n:'Infra & Ops',              pct:12, c:'#f59e0b', d:'Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. Autopay.',r:'Review tier every 5 clients. Never borrow from other buckets if infra grows.'},
   {k:'emergency',n:'Emergency Fund',          pct:10, c:'#3b82f6', d:'Business survival buffer. Stops at ₹50K cap — excess redirects to reinvestment.', r:'Hard cap ₹50K. No exceptions.',  cap:ECAP},
-  {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees.',     r:'Spend only on pre-planned milestones. Log every spend.'},
+  {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees from client 2 onward. First client setup goes to Infra & Ops to cover Year 1 tooling costs.',     r:'Spend only on pre-planned milestones. Log every spend.'},
   {k:'service', n:'Client Service Reserve',   pct:10, c:'#ec4899', d:'Bug fixes, onboarding, surprise requests. Monthly drain ceiling: ₹8,000. Beyond that — charge the client or log as custom work.',r:'Max ₹8K/mo drain. Anything above = billable. Surplus rolls over, never cashed out.'},
   {k:'personal',n:'Personal / Director Salary',pct:15,c:'#a855f7', d:'Extract as director remuneration. Scales by ARR crossed: < ₹2L → 15% · ₹2L–5L → 18% · ₹5L+ → 20%.',r:'ARR-triggered, not client-count triggered. App auto-calculates.'},
 ];
@@ -602,7 +602,7 @@ const RULES=[
   {icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',                               ic:'#00091a', c:'#3b82f6', t:'Emergency fund hard cap: ₹50,000',           d:'Once hit, stop all allocations to it. The app auto-redirects the 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.'},
   {icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',  ic:'#0e0017', c:'#a855f7', t:'Personal bucket scales by ARR — not client count',  d:'< ₹2L ARR → 15% · ₹2L–5L ARR → 18% · ₹5L+ ARR → 20% max. ARR-triggered because a discounted client doesn\'t earn the same milestone as a full-price one. App auto-calculates. Extract as director salary only — never dividends.'},
   {icon:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',           ic:'#1a0008', c:'#ec4899', t:'No borrowing between buckets. Ever.',         d:'If infra bucket runs short, that\'s a pricing problem — raise your ACV. Each bucket is a separate physical bank account eventually. No exceptions, no rationalisations.'},
-  {icon:'<polyline points="20 6 9 17 4 12"/>',                                                     ic:'#0d1a00', c:'#c8f135', t:'Setup fee → reinvestment only',              d:'Setup fees are one-time capital, not recurring revenue. 100% goes to reinvestment, spent on a pre-decided milestone. Not split. Not touched for personal use.'},
+  {icon:'<polyline points="20 6 9 17 4 12"/>',                                                     ic:'#0d1a00', c:'#c8f135', t:'First client setup → Infra. Client 2+ setup → Reinvestment.',d:'The first ₹20K setup fee pays for your first year of real infra — Supabase, Vercel, Claude Code. It\'s not profit, it\'s your operating cost. From client 2 onward, setup fees go 100% to reinvestment, spent on pre-decided milestones only. Never touch for personal use.'},
   {icon:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>', ic:'#0d0a00', c:'#f59e0b', t:'Extract via director salary, not dividends', d:'Director remuneration is a corporate expense — reduces taxable income. Dividends face double taxation (corporate tax + DDT). Once Pvt Ltd is registered, all personal extraction through salary entries only.'},
   {icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', ic:'#001a1a', c:'#22c55e', t:'All IP must be assigned to the company',    d:'Every line of Nexflow code, every workflow, every domain — must be IP-assigned to the Pvt Ltd via a formal IP Assignment Agreement signed by you as founder. Without this, exit due diligence fails.'},
 ];
@@ -679,7 +679,9 @@ function getCumEmergency(){
 }
 
 // knownCumEmerg and runningARR passed in from cumulative() to avoid recalculation
-function allocate(acv,setup,runningARR,knownCumEmerg){
+// isFirstClient: if true, setup fee goes 100% to infra bucket (covers Year 1 ops/infra costs)
+// For all subsequent clients, setup fee goes to reinvest as usual
+function allocate(acv,setup,runningARR,knownCumEmerg,isFirstClient){
   const arr=(runningARR!==undefined)?runningARR:getARR();
   const cl=getClients();
   const personalPct=getPersonalPctByARR(arr);
@@ -691,11 +693,15 @@ function allocate(acv,setup,runningARR,knownCumEmerg){
   const rawEmerg=Math.round(acv*basePcts.emergency/100);
   const emergAlloc=Math.max(0,Math.min(rawEmerg,Math.max(0,ECAP-cumEmerg)));
   const emergDiff=rawEmerg-emergAlloc;
+  // First client setup fee → 100% Infra & Ops (covers initial infra/tooling costs)
+  // All other setup fees → reinvest as usual
+  const setupToInfra=isFirstClient?(setup||0):0;
+  const setupToReinvest=isFirstClient?0:(setup||0);
   return {
     tax:      Math.round(acv*basePcts.tax/100),
-    infra:    Math.round(acv*infraPct/100),
+    infra:    Math.round(acv*infraPct/100)+setupToInfra,
     emergency:emergAlloc,
-    reinvest: Math.round(acv*reinvestPct/100)+(setup||0)+emergDiff,
+    reinvest: Math.round(acv*reinvestPct/100)+setupToReinvest+emergDiff,
     service:  Math.round(acv*basePcts.service/100),
     personal: Math.round(acv*personalPct/100),
   };
@@ -705,8 +711,10 @@ function allocate(acv,setup,runningARR,knownCumEmerg){
 function cumulative(){
   const t={tax:0,infra:0,emergency:0,reinvest:0,service:0,personal:0};
   let runningEmerg=0,runningARR=0;
-  payments.filter(p=>!p.isDryRun).forEach(p=>{
-    const a=allocate(p.acv||0,p.setup||0,runningARR,runningEmerg);
+  const realPayments=payments.filter(p=>!p.isDryRun);
+  realPayments.forEach((p,idx)=>{
+    const isFirstClient=(idx===0); // First real payment's setup → infra
+    const a=allocate(p.acv||0,p.setup||0,runningARR,runningEmerg,isFirstClient);
     Object.keys(t).forEach(k=>{t[k]+=(a[k]||0)});
     runningEmerg+=a.emergency;
     runningARR+=(p.acv||0);
@@ -736,22 +744,11 @@ function fmt(n){
 }
 function fmtF(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
 
-// ── VERDICT ──
-function verdict(cl,arr){
-  if(!cl)return{t:'Log your first payment to get a financial verdict.',s:'',c:'var(--text3)'};
-  if(arr<INFRA*12)return{t:"ARR doesn't cover 12 months of infra. You're at a loss. Do not proceed until client 2 is confirmed paying.",s:'STAGE: LOSS',c:'var(--red)'};
-  if(cl===1)return{t:`One paying client is proof of concept — not a business. At ${fmtF(arr)} ARR your personal is ${fmtF(Math.round(arr*getPersonalPct(1)/100/12))}/mo. Every rupee of reinvestment goes toward client 2 and 3. Use the CA.`,s:'STAGE: PROOF OF CONCEPT',c:'var(--amber)'};
-  if(cl<5)return{t:`${cl} clients, ${fmt(arr)} ARR. Personal at ${getPersonalPct(cl)}% = ${fmtF(Math.round(arr*getPersonalPct(cl)/100/12))}/mo. Push reinvestment into CA referrals. Don't touch the product.`,s:'STAGE: EARLY TRACTION',c:'var(--amber)'};
-  if(cl<10)return{t:`${cl} clients. At Lite pricing (${fmtF(44000)}/yr Y2+) you're at ${fmt(cl*44000)} renewal ARR — solid. Check emergency fund cap. Start thinking about Pro upsell conversations.`,s:'STAGE: GROWING',c:'var(--accent)'};
-  if(cl<20)return{t:`${cl} clients. You're at Phase 1 MIDC dominance territory. Emergency cap hit — redirect 10% to reinvestment. Push Pro and Enterprise upsells to existing base. Churn is now your enemy.`,s:'STAGE: PHASE 1',c:'var(--accent)'};
-  if(cl<50)return{t:`${cl} clients, ${fmt(arr)} ARR. At 50 clients Enterprise-all: ₹86.5L Year 1, ₹57L Year 2+. Retention beats acquisition now — every churned client costs you all future renewals, not just one year.`,s:'STAGE: SCALING',c:'var(--green)'};
-  return{t:`${cl} clients. You're at or near Phase 1 target. ₹25L ARR milestone is real. Start Phase 2 planning: Pune/Nashik/Aurangabad MIDC, first sales hire from reinvestment bucket.`,s:'STAGE: PHASE 1 COMPLETE',c:'var(--green)'};
-}
-
 // ── RENDER: DASHBOARD ──
 function renderDash(){
   const arr=getARR(),cl=getClients(),mo=Math.round(arr/12);
-  const mg=arr?Math.round(((arr-INFRA*12)/arr)*100):null;
+  const infraMonthly=getInfraTier(cl).monthly;
+  const mg=arr?Math.round(((arr-infraMonthly*12)/arr)*100):null;
   const net=getNetProfit();
   const setupTotal=getSetupTotal();
   const totalCash=arr+setupTotal;
@@ -776,7 +773,8 @@ function renderDash(){
     const lt=realPayments[realPayments.length-1];
     // running ARR = sum of all real payments except the last one
     const runningARRBeforeLast=realPayments.slice(0,-1).reduce((s,p)=>s+(p.acv||0),0);
-    const al=allocate(lt.acv||0,lt.setup||0,runningARRBeforeLast);
+    const isLastPaymentFirst=(realPayments.length===1); // first-ever real payment
+    const al=allocate(lt.acv||0,lt.setup||0,runningARRBeforeLast,undefined,isLastPaymentFirst);
     const tot=(lt.acv||0)+(lt.setup||0);
     const infraTier=getInfraTier(cl);
     bb.innerHTML=`<div style="background:#1a1000;border:1px solid #3a2000;border-radius:var(--r);padding:7px 10px;margin-bottom:12px;font-size:11px;color:#f59e0b;display:flex;justify-content:space-between;align-items:center">
@@ -867,27 +865,66 @@ function renderBuckets(){
     return;
   }
 
+  // Compute total across all buckets for fill % calculation
+  const totalCash=Object.values(cum).reduce((s,v)=>s+v,0);
+  // First client note: check if setup was directed to infra
+  const hasFirstSetup=payments.filter(p=>!p.isDryRun).length>0&&(payments.filter(p=>!p.isDryRun)[0].setup||0)>0;
+  const firstSetupAmt=hasFirstSetup?(payments.filter(p=>!p.isDryRun)[0].setup||0):0;
+
   bkg.innerHTML=B.map(b=>{
     const amt=cum[b.k]||0;
     const capHit=b.k==='emergency'&&emergCap;
     const moNotional=Math.round(amt/12);
+    const fillPct=totalCash>0?Math.min(100,Math.round((amt/totalCash)*100)):0;
     const pctLabel=b.k==='infra'?`${infraPct}% (tiered · ${infraTier.label})`:b.k==='personal'?`${personalPct}% (ARR-scaled)`:b.pct+'%';
+
+    // First client special note for infra bucket
+    let firstClientNote='';
+    if(b.k==='infra'&&hasFirstSetup){
+      firstClientNote=`<div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:5px 8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:5px">
+        <svg viewBox="0 0 24 24" width="10" height="10" style="stroke:#f59e0b;fill:none;stroke-width:2;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span style="font-family:var(--fm);font-size:10px;color:#f59e0b">Incl. 1st client setup ₹${Math.round(firstSetupAmt/1000)}K → 100% here</span>
+      </div>`;
+    }
+    if(b.k==='reinvest'&&hasFirstSetup){
+      firstClientNote=`<div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:5px 8px;background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.15);border-radius:5px">
+        <svg viewBox="0 0 24 24" width="10" height="10" style="stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-family:var(--fm);font-size:10px;color:var(--accent2)">Client 2+ setup fees → 100% here</span>
+      </div>`;
+    }
+
     let extraBadge='';
     if(b.k==='infra')extraBadge=`<div class="bkcap" style="background:#1a1000;color:#f59e0b">Tier: ${infraTier.label} · ${fmtF(infraTier.monthly)}/mo · Annual: ${fmtF(infraTier.monthly*12)}</div>`;
     if(b.k==='service')extraBadge=`<div class="bkcap" style="background:#1a0010;color:#ec4899">Monthly drain ceiling: ${fmtF(SERVICE_MONTHLY_CEILING)} · beyond = billable</div>`;
-    if(b.k==='personal'){const nt=PERSONAL_ARR_TIERS.find(t=>arr<t.minARR);if(nt)extraBadge=`<div class="bkcap" style="background:#0e0017;color:#a855f7">Next tier ${nt.pct}% unlocks at ${fmt(nt.minARR)} ARR</div>`;}
+    if(b.k==='personal'){const nt=PERSONAL_ARR_TIERS.find(t=>arr<t.maxARR&&arr>=t.minARR&&t.pct>personalPct);if(nt)extraBadge=`<div class="bkcap" style="background:#0e0017;color:#a855f7">Next tier ${nt.pct}% unlocks at ${fmt(nt.minARR)} ARR</div>`;}
+
     return `<div class="bkc">
       <div class="bktop" style="background:${b.c}"></div>
       <div class="bkl" style="color:${b.c}">${b.n}</div>
       <div class="bkv">${fmtF(amt)}</div>
-      <div class="bkp">${pctLabel} of each payment${b.k==='reinvest'?' + 100% setup fees':''}</div>
+      <div class="bkp">${pctLabel} of each payment${b.k==='reinvest'?' + client 2+ setup fees':''}</div>
       <div class="bk-monthly">${fmtF(moNotional)}/mo notional</div>
+
+      <!-- FILL BAR — width set directly so it shows even on hidden tab render -->
+      <div style="margin:10px 0 6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.04em">SHARE OF TOTAL CASH</span>
+          <span style="font-family:var(--fm);font-size:10px;font-weight:600;color:${b.c}">${fillPct}%</span>
+        </div>
+        <div style="background:var(--bg3);border-radius:999px;height:6px;overflow:hidden">
+          <div class="bk-fill-bar" style="height:100%;border-radius:999px;background:${b.c};width:${fillPct}%" data-target="${fillPct}"></div>
+        </div>
+      </div>
+
       ${capHit?`<div class="bkcap" style="background:rgba(200,241,53,.1);color:var(--accent)">✓ Cap hit — overflow → reinvestment</div>`:''}
       ${b.cap&&!capHit?`<div class="bkcap" style="background:var(--bg2);color:var(--text3)">${fmtF(ECAP-getCumEmergency())} to cap</div>`:''}
       ${extraBadge}
+      ${firstClientNote}
       <div class="bkd">${b.d}<em>${b.r}</em></div>
     </div>`;
   }).join('');
+  // No rAF animation here — bars already set to correct width above.
+  // Animation fires only on tab switch (see switchView).
 }
 
 // ── RENDER: REINVESTMENT ──
@@ -1094,24 +1131,30 @@ window.deleteChurn=function(btn){
 window.runDryRun=function(){
   // Compute allocation for P2 Lite Y1 = ₹64K (setup ₹20K + ACV ₹44K)
   const dryACV=44000,drySetup=20000;
-  const dryARR=getARR()+dryACV; // what ARR would be if this were real
+  const currentRealClients=payments.filter(p=>!p.isDryRun).length;
+  const dryIsFirstClient=(currentRealClients===0); // no real payments yet → this would be first
+  const dryARR=getARR()+dryACV;
   const dryPersonalPct=getPersonalPctByARR(dryARR);
   const dryInfraPct=getInfraPct(getClients(),dryARR);
-  const al=allocate(dryACV,drySetup,dryARR,getCumEmergency());
+  const al=allocate(dryACV,drySetup,getARR(),getCumEmergency(),dryIsFirstClient);
   const total=dryACV+drySetup;
+  const setupDestLabel=dryIsFirstClient?'Setup ₹20,000 → 100% Infra &amp; Ops (first client)':'Setup ₹20,000 → 100% Reinvestment';
 
   // Build result HTML
-  const rows=B.map(b=>`
+  const rows=B.map(b=>{
+    const setupNote=b.k==='infra'&&dryIsFirstClient?' + setup ₹20K':b.k==='reinvest'&&!dryIsFirstClient?' + setup ₹20K':'';
+    return `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1a2a00">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="width:7px;height:7px;border-radius:50%;background:${b.c};flex-shrink:0"></div>
         <div>
           <div style="font-size:12px;font-weight:600;color:var(--text)">${b.n}</div>
-          <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?dryPersonalPct+'%':b.k==='infra'?dryInfraPct+'% (tiered)':b.pct+'%'}${b.k==='reinvest'?' + setup ₹20K':''}</div>
+          <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?dryPersonalPct+'%':b.k==='infra'?dryInfraPct+'% (tiered)':b.pct+'%'}${setupNote}</div>
         </div>
       </div>
       <div style="font-family:var(--fm);font-size:13px;font-weight:600;color:${b.c}">${fmtF(al[b.k]||0)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Show in overlay on dashboard
   let overlay=document.getElementById('dryrun-result');
@@ -1127,13 +1170,13 @@ window.runDryRun=function(){
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">Dry Run — P2 Lite · Year 1</div>
           <div style="font-family:var(--fm);font-size:20px;font-weight:600;color:var(--accent)">₹64,000 total received</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">Setup ₹20,000 → 100% reinvestment · ACV ₹44,000 → split below</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${setupDestLabel} · ACV ₹44,000 → split below</div>
         </div>
         <button onclick="document.getElementById('dryrun-result').remove()" style="background:none;border:1px solid #2a4a00;color:var(--text3);border-radius:var(--r);padding:6px 12px;cursor:pointer;font-family:var(--fh);font-size:12px">Close</button>
       </div>
       ${rows}
       <div style="margin-top:1rem;padding:10px 12px;background:#0a1a00;border-radius:var(--r);font-size:11px;color:var(--text3)">
-        ✓ This is what your buckets will show after your first real P2 Lite Y1 payment. If these numbers look right, you're ready. Personal at ${dryPersonalPct}% · Infra at ${dryInfraPct}% (ARR-tiered).
+        ✓ This is what your buckets will show after your first real P2 Lite Y1 payment. Personal at ${dryPersonalPct}% · Infra at ${dryInfraPct}% (ARR-tiered)${dryIsFirstClient?' · First client ₹20K setup → Infra & Ops':''}. If these numbers look right, you\'re ready.
       </div>
       <div style="margin-top:.75rem;padding:10px 12px;background:#1a0000;border-radius:var(--r);font-size:11px;color:#ff8888">
         Note: This is a preview only — nothing was saved. Real totals in Buckets remain unchanged until you log an actual payment.
@@ -1181,12 +1224,13 @@ window.logPayment=function(){
   const newARR=getARR();
   const newCl=getClients();
   const runningARRBefore=newARR-acv;
-  const al=allocate(acv,setup,runningARRBefore);
+  const isFirstClient=(newCl===1); // just became client 1 → first real payment
+  const al=allocate(acv,setup,runningARRBefore,undefined,isFirstClient);
   const total=acv+setup;
   const infraTier=getInfraTier(newCl);
 
   // Show allocation result panel
-  showAllocationResult(cl,total,acv,setup,al,newARR,newCl,infraTier);
+  showAllocationResult(cl,total,acv,setup,al,newARR,newCl,infraTier,isFirstClient);
 
   // Update all views in background
   renderAll();
@@ -1199,7 +1243,7 @@ window.logPayment=function(){
   onPricingChange();
 };
 
-function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier){
+function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier,isFirstClient){
   // Remove existing result if any
   const existing=document.getElementById('log-result');
   if(existing)existing.remove();
@@ -1207,12 +1251,13 @@ function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier){
   const personalPct=getPersonalPctByARR(newARR);
   const rows=B.map(b=>{
     const amt=al[b.k]||0;
-    const pct=acv?Math.round((amt/total)*100):0;
+    const pct=total?Math.round((amt/total)*100):0;
+    const setupNote=b.k==='infra'&&isFirstClient&&setup?` + setup ₹${Math.round(setup/1000)}K (first client)`:b.k==='reinvest'&&!isFirstClient&&setup?` + setup fee`:'';
     return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
       <div style="width:8px;height:8px;border-radius:50%;background:${b.c};flex-shrink:0"></div>
       <div style="flex:1">
         <div style="font-size:12px;font-weight:600;color:var(--text)">${b.n}</div>
-        <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?personalPct+'%':b.k==='infra'?getInfraPct(newCl,newARR)+'% (tiered)':b.pct+'%'}${b.k==='reinvest'&&setup?' + setup fee':''}</div>
+        <div style="font-size:10px;color:var(--text3)">${b.k==='personal'?personalPct+'%':b.k==='infra'?getInfraPct(newCl,newARR)+'% (tiered)':b.pct+'%'}${setupNote}</div>
       </div>
       <div style="text-align:right">
         <div style="font-family:var(--fm);font-size:13px;font-weight:600;color:${b.c}">${fmtF(amt)}</div>
@@ -1220,6 +1265,10 @@ function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier){
       </div>
     </div>`;
   }).join('');
+
+  const setupDestLabel=isFirstClient&&setup
+    ?`Setup ${fmtF(setup)} → 100% Infra &amp; Ops (first client) · ACV ${fmtF(acv)} → split below`
+    :`Setup ${fmtF(setup)} → reinvestment · ACV ${fmtF(acv)} → split below`;
 
   const div=document.createElement('div');
   div.id='log-result';
@@ -1230,7 +1279,7 @@ function showAllocationResult(client,total,acv,setup,al,newARR,newCl,infraTier){
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">✓ Payment logged — buckets updated</div>
           <div style="font-family:var(--fm);font-size:20px;font-weight:600;color:var(--accent)">${fmtF(total)} allocated</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">${client} · Setup ${fmtF(setup)} → reinvestment · ACV ${fmtF(acv)} → split below</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${client} · ${setupDestLabel}</div>
         </div>
         <button onclick="document.getElementById('log-result').remove()" style="background:none;border:1px solid #003a18;color:var(--text3);border-radius:var(--r);padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--fh)">Dismiss</button>
       </div>
@@ -1297,18 +1346,21 @@ window.preview=function(){
   const total=setup+acv;
   const pc=document.getElementById('prev-content'),pe=document.getElementById('prev-empty');
   pc.style.display='block';pe.style.display='none';
+  const currentRealClients=payments.filter(q=>!q.isDryRun).length;
+  const previewIsFirstClient=(currentRealClients===0); // this would be client #1
   const previewARR=getARR()+acv;
-  const previewCl=getClients()+1;
+  const previewCl=currentRealClients+1;
   const personalPct=getPersonalPctByARR(previewARR);
   const infraPct=getInfraPct(previewCl,previewARR);
+  const setupDest=previewIsFirstClient?'→ 100% Infra &amp; Ops (first client)':'→ 100% Reinvestment';
   document.getElementById('prev-total').textContent=`Day-1 total: ${fmtF(total)}`;
-  document.getElementById('prev-split').textContent=`Setup ${fmtF(setup)} → 100% reinvestment · ACV ${fmtF(acv)} → split below · Personal ${personalPct}% · Infra ${infraPct}% (tiered)`;
-  const al=allocate(acv,setup,previewARR);
+  document.getElementById('prev-split').textContent=`Setup ${fmtF(setup)} ${previewIsFirstClient?'→ Infra & Ops (1st client)':'→ Reinvestment'} · ACV ${fmtF(acv)} → split below · Personal ${personalPct}% · Infra ${infraPct}% (tiered)`;
+  const al=allocate(acv,setup,getARR(),getCumEmergency(),previewIsFirstClient);
   document.getElementById('prev-rows').innerHTML=B.map(b=>{
-    const livePct=b.k==='personal'?personalPct:b.k==='infra'?infraPct:b.pct;
     const pctLabel=b.k==='infra'?`${infraPct}% (tiered)`:b.k==='personal'?`${personalPct}% (ARR-scaled)`:b.pct+'%';
+    const setupNote=b.k==='infra'&&previewIsFirstClient&&setup?` + setup ₹${Math.round(setup/1000)}K (1st client)`:b.k==='reinvest'&&!previewIsFirstClient&&setup?` + setup ₹${Math.round(setup/1000)}K`:'';
     return `<div class="prw">
-      <div class="prl"><div class="prd" style="background:${b.c}"></div><div><div class="prn">${b.n}</div><div class="prp">${pctLabel}${b.k==='reinvest'&&setup?' + setup ₹'+Math.round(setup/1000)+'K':''}</div></div></div>
+      <div class="prl"><div class="prd" style="background:${b.c}"></div><div><div class="prn">${b.n}</div><div class="prp">${pctLabel}${setupNote}</div></div></div>
       <div class="pra" style="color:${b.c}">${fmtF(al[b.k]||0)}</div>
     </div>`;
   }).join('');
@@ -1360,6 +1412,19 @@ function switchView(id){
   const view=document.getElementById('view-'+id);
   if(view)view.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
+  // Animate fill bars when Buckets tab becomes visible
+  if(id==='buckets'){
+    const bars=document.querySelectorAll('.bk-fill-bar');
+    bars.forEach(bar=>{ bar.style.transition='none'; bar.style.width='0%'; });
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        bars.forEach(bar=>{
+          bar.style.transition='width .8s cubic-bezier(.4,0,.2,1)';
+          bar.style.width=bar.dataset.target+'%';
+        });
+      });
+    });
+  }
 }
 
 document.querySelectorAll('.nb').forEach(btn=>{
