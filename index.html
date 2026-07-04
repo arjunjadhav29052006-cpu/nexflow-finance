@@ -259,10 +259,15 @@ body{display:flex;min-height:100vh}
     <button class="nb" data-view="rules"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Hard Rules</button>
   </nav>
   <div class="s-foot">
+    <div id="phase-toggle" style="margin-bottom:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;cursor:pointer" onclick="togglePhase()">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:3px">ENTITY STAGE</div>
+      <div id="phase-label" style="font-size:12px;font-weight:700;color:var(--accent)">Sole Proprietor</div>
+      <div id="phase-sub" style="font-size:9px;color:var(--text3);margin-top:2px">Tap to switch after Pvt Ltd incorporation</div>
+    </div>
     <div class="cc"><span class="cc-n" id="sb-clients">0</span><span class="cc-l">paying clients</span></div>
     <div class="arr-row"><span class="arr-l">ARR</span><span class="arr-v" id="sb-arr">₹0</span></div>
     <div class="arr-row"><span class="arr-l">NET PROFIT</span><span class="arr-v" id="sb-net" style="color:var(--accent)">₹0</span></div>
-    <button class="tax-pill" onclick="switchView('dashboard');setTimeout(()=>document.getElementById('tax-section').scrollIntoView({behavior:'smooth'}),100)">
+    <button class="tax-pill" id="sb-tax-pill" onclick="switchView('dashboard');setTimeout(()=>document.getElementById('tax-section').scrollIntoView({behavior:'smooth'}),100)">
       <svg viewBox="0 0 24 24" width="10" height="10" style="stroke:#ff4444;fill:none;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span id="sb-tax-label">Next tax deadline</span>
     </button>
@@ -285,6 +290,18 @@ body{display:flex;min-height:100vh}
         <button class="btn-sec" onclick="document.getElementById('import-input').click()">Import JSON</button>
         <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)"/>
       </div>
+    </div>
+
+    <!-- ENTITY PHASE BANNER -->
+    <div id="phase-banner" style="border-radius:var(--rl);padding:.875rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="phase-banner-dot" style="width:8px;height:8px;border-radius:50%;flex-shrink:0"></div>
+        <div>
+          <div id="phase-banner-title" style="font-size:12px;font-weight:700"></div>
+          <div id="phase-banner-sub" style="font-size:11px;color:var(--text3);margin-top:1px"></div>
+        </div>
+      </div>
+      <button class="btn-sec" onclick="togglePhase()" style="flex-shrink:0">Switch stage</button>
     </div>
 
     <!-- DRY RUN BANNER — shown until first real payment is logged -->
@@ -408,7 +425,9 @@ body{display:flex;min-height:100vh}
 
   <!-- ── BUCKETS ── -->
   <section class="view" id="view-buckets">
-    <div class="vh"><div class="vh-left"><h1 class="vt">Buckets</h1><span class="vs">Cumulative totals · 1st client setup → Infra · client 2+ setup → Reinvest · emergency caps at ₹50K</span></div></div>
+    <div class="vh"><div class="vh-left"><h1 class="vt">Buckets</h1><span class="vs">Cumulative totals · 1st client setup → Infra · client 2+ setup → Reinvest · emergency caps at ₹50K</span></div>
+      <button class="btn-sec" onclick="openAuditModal()">🔍 Audit Buckets</button>
+    </div>
     <div class="bkg" id="bkg"></div>
   </section>
 
@@ -531,6 +550,54 @@ body{display:flex;min-height:100vh}
 
 <div class="toast" id="toast"></div>
 
+<!-- PHASE SWITCH CONFIRM MODAL -->
+<div class="modal-overlay" id="phase-modal">
+  <div class="modal">
+    <div class="modal-title"><span id="phase-modal-title">Switch stage?</span><button class="modal-close" onclick="closePhaseModal()">×</button></div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.25rem" id="phase-modal-body"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-sec" onclick="closePhaseModal()" style="flex:1">Cancel</button>
+      <button class="btn-p" onclick="confirmPhaseSwitch()" style="flex:1;margin-top:0">Confirm switch</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANUAL BUCKET ADJUSTMENT MODAL -->
+<div class="modal-overlay" id="adjust-modal">
+  <div class="modal">
+    <div class="modal-title">Adjust Bucket <button class="modal-close" onclick="closeAdjustModal()">×</button></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.6">Use this to correct a bucket manually — e.g. you withdrew cash, moved money between accounts, or the formula missed something. This does NOT touch the underlying payment records — it's a standalone correction layered on top.</div>
+    <div class="fg">
+      <label class="fl">Bucket</label>
+      <select class="fi" id="adj-bucket"></select>
+    </div>
+    <div class="fr">
+      <div class="fg">
+        <label class="fl">Adjustment type</label>
+        <select class="fi" id="adj-type">
+          <option value="add">Add money (+)</option>
+          <option value="subtract">Withdraw / remove money (−)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Amount (₹)</label><input type="number" class="fi" id="adj-amount" placeholder="5000" min="0"/></div>
+    </div>
+    <div class="fg"><label class="fl">Reason</label><input type="text" class="fi" id="adj-reason" placeholder="e.g. Withdrew for CA filing fee"/></div>
+    <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="adj-date"/></div>
+    <button class="btn-p" onclick="submitAdjustment()">Apply Adjustment</button>
+
+    <div id="adj-history" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)"></div>
+  </div>
+</div>
+
+<!-- BUCKET AUDIT MODAL -->
+<div class="modal-overlay" id="audit-modal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-title">Bucket Audit — Full Ledger <button class="modal-close" onclick="closeAuditModal()">×</button></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.6">Every real payment, broken down by exactly what each bucket received. This is your source of truth for how much should physically be sitting in each account right now.</div>
+    <div id="audit-content" style="max-height:60vh;overflow-y:auto"></div>
+  </div>
+</div>
+
 <script>
 'use strict';
 const INFRA_TIERS=[
@@ -563,15 +630,35 @@ function getPersonalPctByARR(arr){
 const SERVICE_MONTHLY_CEILING=8000;
 const ECAP=50000,SK='nxfin_v3';
 
+// ── ENTITY PHASE ──
+// 'sole' = Sole Proprietor (current reality, zero registration, near-zero tax liability)
+// 'pvtltd' = Pvt Ltd incorporated (25.17% corporate tax under Sec 115BAA applies)
+// This single switch drives tax %, GST visibility, advance tax deadlines, and rule copy.
+let entityPhase='sole';
+function getEntityPhase(){return entityPhase}
+function isPvtLtd(){return entityPhase==='pvtltd'}
+function getTaxPct(){return isPvtLtd()?25:5}
+
 // ── BUCKET CONFIG ──
-const B=[
-  {k:'tax',     n:'Tax Reserve',              pct:25, c:'#ff4444', d:'Transfer to separate account instantly. Advance tax: Jun·Sep·Dec·Mar.',           r:'Legally not yours. Do not rationalise.'},
-  {k:'infra',   n:'Infra & Ops',              pct:12, c:'#f59e0b', d:'Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. Autopay.',r:'Review tier every 5 clients. Never borrow from other buckets if infra grows.'},
-  {k:'emergency',n:'Emergency Fund',          pct:10, c:'#3b82f6', d:'Business survival buffer. Stops at ₹50K cap — excess redirects to reinvestment.', r:'Hard cap ₹50K. No exceptions.',  cap:ECAP},
-  {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees from client 2 onward. First client setup goes to Infra & Ops to cover Year 1 tooling costs.',     r:'Spend only on pre-planned milestones. Log every spend.'},
-  {k:'service', n:'Client Service Reserve',   pct:10, c:'#ec4899', d:'Bug fixes, onboarding, surprise requests. Monthly drain ceiling: ₹8,000. Beyond that — charge the client or log as custom work.',r:'Max ₹8K/mo drain. Anything above = billable. Surplus rolls over, never cashed out.'},
-  {k:'personal',n:'Personal / Director Salary',pct:15,c:'#a855f7', d:'Extract as director remuneration. Scales by ARR crossed: < ₹2L → 15% · ₹2L–5L → 18% · ₹5L+ → 20%.',r:'ARR-triggered, not client-count triggered. App auto-calculates.'},
-];
+// NOTE: tax bucket pct/desc/rule are computed dynamically per phase — see getBucketConfig()
+function getBucketConfig(){
+  const pvt=isPvtLtd();
+  const taxPct=getTaxPct();
+  return [
+    {k:'tax', n:pvt?'Tax Reserve':'Tax Reserve (habit)', pct:taxPct, c:'#ff4444',
+      d:pvt
+        ? 'Transfer to separate account instantly. Covers Section 115BAA corporate tax (25.17%). Advance tax: Jun·Sep·Dec·Mar.'
+        : 'Sole proprietor stage: your actual income tax liability is ~₹0 (below ₹12L threshold). This 5% is pure discipline-building, not a real legal obligation yet. No advance tax deadlines apply until Pvt Ltd or ₹12L+ personal income.',
+      r:pvt ? 'Legally not yours. Do not rationalise.' : 'Not a legal requirement yet — but don\'t skip it. Builds the habit for when it becomes real.'},
+    {k:'infra',   n:'Infra & Ops',              pct:12, c:'#f59e0b', d:'Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. Autopay.',r:'Review tier every 5 clients. Never borrow from other buckets if infra grows.'},
+    {k:'emergency',n:'Emergency Fund',          pct:10, c:'#3b82f6', d:'Business survival buffer. Stops at ₹50K cap — excess redirects to reinvestment.', r:'Hard cap ₹50K. No exceptions.',  cap:ECAP},
+    {k:'reinvest',n:'Reinvestment',             pct:28, c:'#c8f135', d:'CA referral, one-pager, demo. Pre-decided spend only. + 100% of setup fees from client 2 onward. First client setup goes to Infra & Ops to cover Year 1 tooling costs.',     r:'Spend only on pre-planned milestones. Log every spend.'},
+    {k:'service', n:'Client Service Reserve',   pct:10, c:'#ec4899', d:'Bug fixes, onboarding, surprise requests. Monthly drain ceiling: ₹8,000. Beyond that — charge the client or log as custom work.',r:'Max ₹8K/mo drain. Anything above = billable. Surplus rolls over, never cashed out.'},
+    {k:'personal',n:'Personal / Director Salary',pct:15,c:'#a855f7', d:'Extract as director remuneration. Scales by ARR crossed: < ₹2L → 15% · ₹2L–5L → 18% · ₹5L+ → 20%.',r:'ARR-triggered, not client-count triggered. App auto-calculates.'},
+  ];
+}
+// B is recomputed on every render call that needs current-phase bucket config
+let B=getBucketConfig();
 
 const PVT_CHECKS=[
   {id:'dsc',   title:'Obtain DSC (Digital Signature Certificate)',         desc:'Required for all directors. Get Class 3 DSC from MCA-authorised agencies (e.g. eMudhra, Sify). Cost: ₹1,000–1,500 per director. Takes 1–2 days.',                                    tag:'Step 1', tagColor:'#ff4444'},
@@ -581,31 +668,39 @@ const PVT_CHECKS=[
   {id:'moa',   title:'Draft MOA and AOA',                                  desc:'Memorandum of Association (objects clause — include SaaS, automation, software). Articles of Association (internal rules). Your CA will draft these. Ensure "technology services" and "B2B software" are in objects.',  tag:'Step 5', tagColor:'#f59e0b'},
   {id:'pan',   title:'Receive Certificate of Incorporation + PAN/TAN',    desc:'MCA issues Certificate of Incorporation (CIN) digitally. PAN and TAN are auto-generated via SPICe+. This is when your Pvt Ltd legally exists. Timeline: 7–15 working days after filing.',                     tag:'Step 6', tagColor:'#3b82f6'},
   {id:'bank',  title:'Open current account in company name',              desc:'Use CIN + COI + PAN to open a current account at any bank. HDFC/ICICI/Kotak recommended for startup-friendly features. All Nexflow payments must now come into this account — not personal.',                     tag:'Step 7', tagColor:'#3b82f6'},
-  {id:'gst',   title:'GST Registration (once first invoice is raised)',    desc:'Mandatory once you cross ₹20L turnover, but register early. File GSTR-1 (monthly/quarterly) and GSTR-3B. Charge 18% GST on B2B invoices — clients get input tax credit so it\'s not a cost to them.',           tag:'Step 8', tagColor:'#22c55e'},
+  {id:'gst',   title:'GST Registration (only once turnover approaches ₹20L)',    desc:'Mandatory only after crossing ₹20L turnover — do not register before that unless you have a specific B2B ITC reason. File GSTR-1 (monthly/quarterly) and GSTR-3B once registered. Charge 18% GST on B2B invoices — clients get input tax credit so it\'s not a cost to them.',           tag:'When ₹20L nears', tagColor:'#22c55e'},
 ];
 
 const LAWS=[
-  {num:'Section 115BAA — Income Tax Act (FY 2025-26 verified)', title:'22% flat corporate tax rate — effective 25.17%', desc:'Pvt Ltd companies opt for Section 115BAA: 22% base + 10% flat surcharge + 4% cess = 25.17% effective rate. Confirmed for FY 2025-26. This is irrevocable once elected — but always the right choice for SaaS businesses. No MAT liability once opted in. Your 25% tax reserve in this app covers it exactly with a tiny buffer.', benefit:'~5% lower than standard 30% regime', benefitColor:'rgba(34,197,94,.15)', benefitTextColor:'#22c55e'},
+  {num:'GST Registration — CGST Act Section 22', title:'Not required yet — register only when it makes sense', desc:'GST registration becomes MANDATORY only after crossing ₹20L turnover. Below that, registration is entirely optional. At current ARR, do NOT register — it adds monthly/quarterly GSTR-1 and GSTR-3B filing burden for zero benefit. Voluntary registration only makes sense once you have several B2B clients who specifically want ITC-eligible invoices, or you\'re approaching ₹20L. Until then: skip it entirely. Once registered (voluntary or mandatory), GST applies to every invoice from that point forward — not retroactively to existing clients until their next renewal.', benefit:'Zero GST compliance burden at current stage', benefitColor:'rgba(34,197,94,.15)', benefitTextColor:'#22c55e'},
+  {num:'Section 115BAA — Income Tax Act (FY 2025-26 verified)', title:'22% flat corporate tax rate — effective 25.17%', desc:'Pvt Ltd companies opt for Section 115BAA: 22% base + 10% flat surcharge + 4% cess = 25.17% effective rate. Confirmed for FY 2025-26. This is irrevocable once elected — but always the right choice for SaaS businesses. No MAT liability once opted in. This only applies AFTER Pvt Ltd incorporation — as a sole proprietor your current tax liability is near-zero. The app\'s tax bucket auto-scales to 25% once you flip the Entity Stage toggle post-incorporation.', benefit:'~5% lower than standard 30% regime', benefitColor:'rgba(34,197,94,.15)', benefitTextColor:'#22c55e'},
   {num:'Section 56(2)(viib) — Abolished Budget 2025-26', title:'Angel Tax completely removed — Budget 2025-26', desc:'Angel Tax has been fully abolished for DPIIT-recognised startups — both domestic and foreign investors. This means when you raise funding in Phase 2, investors will NOT face tax on any premium paid over face value of shares. Zero friction on fundraising. This was a major blocker for Indian startups — it is now gone.', benefit:'Zero tax friction on fundraising rounds', benefitColor:'rgba(200,241,53,.15)', benefitTextColor:'#c8f135'},
   {num:'DPIIT Recognition + Section 80-IAC — Budget 2025-26 updated', title:'100% tax holiday for 3 years — apply after incorporation', desc:'Apply for DPIIT Startup Recognition (free, startupindia.gov.in) immediately after incorporating. Then apply separately to IMB for 80-IAC exemption. If approved: 100% income tax exemption on profits for any 3 consecutive years within your first 10 years. Budget 2025-26 extended eligibility to startups incorporated before April 1, 2030. HONEST WARNING: Only ~1.8% of 2,07,135 DPIIT-recognised startups have received 80-IAC approval. IMB separately evaluates innovation, scalability, and wealth-creation potential. DPIIT recognition alone is not enough — the IMB application is the hard part. Apply early, demonstrate genuine innovation.', benefit:'100% profit tax exemption — 3 years (Budget 2025-26)', benefitColor:'rgba(200,241,53,.15)', benefitTextColor:'#c8f135'},
   {num:'GST — Section 2(6) IGST Act + LUT Export Benefit', title:'0% GST on UK/global client invoices under LUT', desc:'SaaS services to Indian clients: 18% GST (SAC code 998314). BUT for UK/global clients in Phase 3: if all 5 conditions of Section 2(6) of IGST Act are met, it qualifies as Export of Services — 0% GST under Letter of Undertaking (LUT). File LUT in Form GST RFD-11 before invoicing international clients each year. You then claim full Input Tax Credit refund on all business expenses. Net effect: UK clients pay you with zero GST, and you reclaim tax on your own costs. File LUT on startupindia or GST portal before first international invoice.', benefit:'0% GST + ITC refund on all UK/global revenue', benefitColor:'rgba(59,130,246,.15)', benefitTextColor:'#3b82f6'},
   {num:'Section 44AD — Presumptive Taxation (pre-Pvt Ltd only)', title:'Presumptive taxation: 8% of gross turnover deemed as profit (for businesses under ₹2Cr)', desc:'Section 44AD applies to businesses with gross turnover under ₹2 Crore. Under it, 8% of turnover is deemed profit (6% for digital receipts) — you pay tax only on that deemed amount regardless of actual profit. Before Pvt Ltd registration this reduces your compliance burden significantly. At ₹25L turnover, deemed profit is only ₹2L — minimal tax. Important: once incorporated as Pvt Ltd, Section 115BAA applies instead. Do not delay incorporation to exploit 44AD — the Pvt Ltd structure gives far greater long-term benefits including IP protection and exit readiness.', benefit:'Minimal tax and compliance burden pre-incorporation', benefitColor:'rgba(245,158,11,.15)', benefitTextColor:'#f59e0b'},
-  {num:'Director Remuneration — Companies Act 2013', title:'Extract profit as director salary — primary mechanism', desc:'Director remuneration is a corporate expense under Companies Act 2013 — it reduces net taxable income before corporate tax is applied. At your current revenue level and age, your director salary will be well within the ₹3L basic exemption limit (new tax regime). This is your only legitimate profit extraction route — not dividends, which face double taxation (corporate tax already paid + dividend distribution tax).', benefit:'Reduces corporate taxable income directly', benefitColor:'rgba(168,85,247,.15)', benefitTextColor:'#a855f7'},
+  {num:'Director Remuneration — Companies Act 2013 (Post-Pvt Ltd only)', title:'Extract profit as director salary — primary mechanism after incorporation', desc:'Director remuneration is a corporate expense under Companies Act 2013 — it reduces net taxable income before corporate tax is applied. Pre-Pvt Ltd, this doesn\'t apply — as sole proprietor you simply draw money as personal income, no formal salary structure needed. Post-incorporation: keep salary within ₹12L to stay at zero personal tax (new regime). This becomes your only legitimate profit extraction route — not dividends, which face double taxation (corporate tax already paid + dividend tax on receipt).', benefit:'Reduces corporate taxable income directly', benefitColor:'rgba(168,85,247,.15)', benefitTextColor:'#a855f7'},
   {num:'IP Assignment — Companies Act 2013', title:'Assign all IP to the Pvt Ltd immediately after incorporation', desc:'Every line of Nexflow code, every n8n workflow, every domain (nexflowautomations.com, stardust.in), every trademark — must be formally assigned to the Pvt Ltd via an IP Assignment Agreement the week you incorporate. A PE buyer or strategic acquirer in Phase 3 is buying IP ownership, not people. If IP is still in your personal name during due diligence, the deal collapses or valuation craters. Get your CA to draft this on Day 1.', benefit:'Non-negotiable for ₹925Cr exit valuation', benefitColor:'rgba(255,68,68,.15)', benefitTextColor:'#ff4444'},
   {num:'GST Input Tax Credit — B2B domestic clients', title:'Factory clients can claim ITC on your GST invoices', desc:'When you charge 18% GST to factory clients, they claim it back as Input Tax Credit — so your GST is NOT a cost to them. This makes your pricing more competitive than an unregistered competitor. Always issue GST invoices to B2B clients. Register voluntarily even before ₹20L threshold to get this advantage early and to keep your own ITC claims valid.', benefit:'GST is neutral cost to B2B factory clients', benefitColor:'rgba(245,158,11,.15)', benefitTextColor:'#f59e0b'},
 ];
 
-const RULES=[
-  {icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',  ic:'#1a0000', c:'#ff4444', t:'Tax bucket is frozen on day 1',            d:'The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (Jun·Sep·Dec·Mar) incurs 1% interest per month plus penalties. Non-negotiable.'},
-  {icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',                   ic:'#1a1000', c:'#f59e0b', t:'Infra bucket is on autopay — tiered cost',  d:'Supabase Pro + Vercel + Claude Code on standing autopay. Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. App calculates infra % dynamically.'},
-  {icon:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',  ic:'#001a08', c:'#22c55e', t:'Reinvestment needs a plan before you spend it',d:'Decide the exact spend before the payment lands. Log it in Reinvestment Log. CA referral fee, one-pager, demo. Pre-₹2L ARR, that\'s the entire list. Unplanned reinvestment is lifestyle inflation.'},
-  {icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',                               ic:'#00091a', c:'#3b82f6', t:'Emergency fund hard cap: ₹50,000',           d:'Once hit, stop all allocations to it. The app auto-redirects the 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.'},
-  {icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',  ic:'#0e0017', c:'#a855f7', t:'Personal bucket scales by ARR — not client count',  d:'< ₹2L ARR → 15% · ₹2L–5L ARR → 18% · ₹5L+ ARR → 20% max. ARR-triggered because a discounted client doesn\'t earn the same milestone as a full-price one. App auto-calculates. Extract as director salary only — never dividends.'},
-  {icon:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',           ic:'#1a0008', c:'#ec4899', t:'No borrowing between buckets. Ever.',         d:'If infra bucket runs short, that\'s a pricing problem — raise your ACV. Each bucket is a separate physical bank account eventually. No exceptions, no rationalisations.'},
-  {icon:'<polyline points="20 6 9 17 4 12"/>',                                                     ic:'#0d1a00', c:'#c8f135', t:'First client setup → Infra. Client 2+ setup → Reinvestment.',d:'The first ₹20K setup fee pays for your first year of real infra — Supabase, Vercel, Claude Code. It\'s not profit, it\'s your operating cost. From client 2 onward, setup fees go 100% to reinvestment, spent on pre-decided milestones only. Never touch for personal use.'},
-  {icon:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>', ic:'#0d0a00', c:'#f59e0b', t:'Extract via director salary, not dividends', d:'Director remuneration is a corporate expense — reduces taxable income. Dividends face double taxation (corporate tax + DDT). Once Pvt Ltd is registered, all personal extraction through salary entries only.'},
-  {icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', ic:'#001a1a', c:'#22c55e', t:'All IP must be assigned to the company',    d:'Every line of Nexflow code, every workflow, every domain — must be IP-assigned to the Pvt Ltd via a formal IP Assignment Agreement signed by you as founder. Without this, exit due diligence fails.'},
-];
+function getRules(){
+  const pvt=isPvtLtd();
+  return [
+    pvt
+      ? {icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',  ic:'#1a0000', c:'#ff4444', t:'Tax bucket is frozen on day 1', d:'The moment a payment lands, transfer 25% to a separate savings account. It is legally not yours. Missing advance tax deadlines (Jun·Sep·Dec·Mar) incurs 1% interest per month plus penalties. Non-negotiable.'}
+      : {icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',  ic:'#0a1400', c:'#22c55e', t:'Tax bucket is a habit reserve, not a legal obligation', d:'As a sole proprietor below ₹12L personal income, your actual tax liability is ~₹0. The 5% reserve builds discipline for when Section 115BAA (25.17%) kicks in post-Pvt Ltd. No advance tax deadlines apply yet — don\'t stress over them.'},
+    {icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',                   ic:'#1a1000', c:'#f59e0b', t:'Infra bucket is on autopay — tiered cost',  d:'Supabase Pro + Vercel + Claude Code on standing autopay. Tiered: 0–5 clients ₹2,576/mo · 6–15 clients ₹4,276/mo · 16–30 clients ₹5,500/mo · 31–50 clients ₹8,000/mo. App calculates infra % dynamically.'},
+    {icon:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',  ic:'#001a08', c:'#22c55e', t:'Reinvestment needs a plan before you spend it',d:'Decide the exact spend before the payment lands. Log it in Reinvestment Log. CA referral fee, one-pager, demo. Pre-₹2L ARR, that\'s the entire list. Unplanned reinvestment is lifestyle inflation.'},
+    {icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',                               ic:'#00091a', c:'#3b82f6', t:'Emergency fund hard cap: ₹50,000',           d:'Once hit, stop all allocations to it. The app auto-redirects the 10% to reinvestment. No point hoarding cash when you should be growing. The cap is the discipline.'},
+    {icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',  ic:'#0e0017', c:'#a855f7', t:'Personal bucket scales by ARR — not client count',  d:'< ₹2L ARR → 15% · ₹2L–5L ARR → 18% · ₹5L+ ARR → 20% max. ARR-triggered because a discounted client doesn\'t earn the same milestone as a full-price one. App auto-calculates.'+(pvt?' Extract as director salary only — never dividends.':' Pre-Pvt Ltd, this is simply your personal drawing — no formal salary structure required yet.')},
+    {icon:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',           ic:'#1a0008', c:'#ec4899', t:'No borrowing between buckets. Ever.',         d:'If infra bucket runs short, that\'s a pricing problem — raise your ACV. Each bucket is a separate physical bank account eventually. No exceptions, no rationalisations.'},
+    {icon:'<polyline points="20 6 9 17 4 12"/>',                                                     ic:'#0d1a00', c:'#c8f135', t:'First client setup → Infra. Client 2+ setup → Reinvestment.',d:'The first ₹20K setup fee pays for your first year of real infra — Supabase, Vercel, Claude Code. It\'s not profit, it\'s your operating cost. From client 2 onward, setup fees go 100% to reinvestment, spent on pre-decided milestones only. Never touch for personal use.'},
+    pvt
+      ? {icon:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>', ic:'#0d0a00', c:'#f59e0b', t:'Extract via director salary, not dividends', d:'Director remuneration is a corporate expense — reduces taxable income. Dividends face double taxation (corporate tax + DDT). All personal extraction through salary entries only.'}
+      : {icon:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>', ic:'#0a1400', c:'#22c55e', t:'Pre-Pvt Ltd: just take drawings, no formal salary needed', d:'You\'re a sole proprietor — there\'s no legal separation between you and the business yet. Move money to yourself as drawings whenever your buckets allow it. No board resolution, no payroll structure required until incorporation.'},
+    {icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', ic:'#001a1a', c:'#22c55e', t:'All IP must be assigned to the company',    d:'Every line of Nexflow code, every workflow, every domain — must be IP-assigned to the Pvt Ltd via a formal IP Assignment Agreement signed by you as founder. Without this, exit due diligence fails. Applies once Pvt Ltd is incorporated.'},
+  ];
+}
 
 // ── PRICING ENGINE ──
 // Structure: {setup_y1, acv, breakdown_y1, breakdown_y2}
@@ -650,16 +745,16 @@ window.onPricingChange=function(){
   document.getElementById('calc-breakdown').textContent=p.breakdown;
   preview();
 };
-let payments=[],reinvestSpends=[],churns=[],taxPaid={},pvtChecks={};
+let payments=[],reinvestSpends=[],churns=[],taxPaid={},pvtChecks={},bucketAdjustments=[];
 
 function load(){
   try{
     const r=localStorage.getItem(SK);
-    if(r){const d=JSON.parse(r);payments=d.payments||[];reinvestSpends=d.reinvestSpends||[];churns=d.churns||[];taxPaid=d.taxPaid||{};pvtChecks=d.pvtChecks||{}}
-  }catch{payments=[];reinvestSpends=[];churns=[];taxPaid={};pvtChecks={}}
+    if(r){const d=JSON.parse(r);payments=d.payments||[];reinvestSpends=d.reinvestSpends||[];churns=d.churns||[];taxPaid=d.taxPaid||{};pvtChecks=d.pvtChecks||{};entityPhase=d.entityPhase||'sole';bucketAdjustments=d.bucketAdjustments||[]}
+  }catch{payments=[];reinvestSpends=[];churns=[];taxPaid={};pvtChecks={};entityPhase='sole';bucketAdjustments=[]}
 }
 function save(){
-  try{localStorage.setItem(SK,JSON.stringify({payments,reinvestSpends,churns,taxPaid,pvtChecks}))}
+  try{localStorage.setItem(SK,JSON.stringify({payments,reinvestSpends,churns,taxPaid,pvtChecks,entityPhase,bucketAdjustments}))}
   catch{toast('Storage error.')}
 }
 
@@ -686,7 +781,8 @@ function allocate(acv,setup,runningARR,knownCumEmerg,isFirstClient){
   const cl=getClients();
   const personalPct=getPersonalPctByARR(arr);
   const infraPct=getInfraPct(cl,arr||acv); // use acv as proxy if arr is 0
-  const basePcts={tax:25,infra:infraPct,emergency:10,service:10,personal:personalPct};
+  const taxPct=getTaxPct();
+  const basePcts={tax:taxPct,infra:infraPct,emergency:10,service:10,personal:personalPct};
   const usedFixed=Object.values(basePcts).reduce((a,b)=>a+b,0);
   const reinvestPct=Math.max(0,100-usedFixed);
   const cumEmerg=(knownCumEmerg!==undefined)?knownCumEmerg:getCumEmergency();
@@ -722,18 +818,70 @@ function cumulative(){
   return t;
 }
 
+// Mirrors cumulative()'s exact replay logic but returns per-payment breakdowns
+// so the audit view can show precisely which payment contributed what to each bucket.
+function getAuditTrail(){
+  const rows=[];
+  const runningTotals={tax:0,infra:0,emergency:0,reinvest:0,service:0,personal:0};
+  let runningEmerg=0,runningARR=0;
+  const realPayments=payments.filter(p=>!p.isDryRun);
+  realPayments.forEach((p,idx)=>{
+    const isFirstClient=(idx===0);
+    const a=allocate(p.acv||0,p.setup||0,runningARR,runningEmerg,isFirstClient);
+    Object.keys(runningTotals).forEach(k=>{runningTotals[k]+=(a[k]||0)});
+    runningEmerg+=a.emergency;
+    runningARR+=(p.acv||0);
+    rows.push({
+      client:p.client||'Unknown',
+      date:p.date||null,
+      acv:p.acv||0,
+      setup:p.setup||0,
+      isFirstClient,
+      alloc:a,
+      runningAfter:{...runningTotals}
+    });
+  });
+  return {rows,finalTotals:runningTotals};
+}
+
 function getNetProfit(){
   const arr=getARR();
   const cl=getClients();
   const infra=getInfraTier(cl).monthly*12;
-  const tax=Math.round(arr*0.25);
+  const tax=Math.round(arr*(getTaxPct()/100));
   return Math.max(0,arr-tax-infra);
 }
 
 function getReinvestBalance(){
   const cum=cumulative();
   const spent=reinvestSpends.reduce((s,r)=>s+(r.amt||0),0);
-  return Math.max(0,cum.reinvest-spent);
+  const adj=getBucketAdjustmentTotal('reinvest');
+  return Math.max(0,cum.reinvest-spent+adj);
+}
+
+// Sum of all manual adjustments for a bucket. Positive = added, negative = withdrawn.
+function getBucketAdjustmentTotal(bucketKey){
+  return bucketAdjustments.filter(a=>a.bucket===bucketKey).reduce((s,a)=>s+(a.amount||0),0);
+}
+
+// Net balance actually sitting in a bucket right now:
+// formula-allocated (cumulative) + manual adjustments − spends logged against it.
+// Only 'reinvest' has a dedicated spend log today; all buckets support manual adjustments.
+function getBucketNetBalance(bucketKey){
+  const cum=cumulative();
+  const allocated=cum[bucketKey]||0;
+  const adj=getBucketAdjustmentTotal(bucketKey);
+  if(bucketKey==='reinvest'){
+    const spent=reinvestSpends.reduce((s,r)=>s+(r.amt||0),0);
+    return allocated-spent+adj;
+  }
+  return allocated+adj;
+}
+
+function getBucketSpentTotal(bucketKey){
+  if(bucketKey==='reinvest')return reinvestSpends.reduce((s,r)=>s+(r.amt||0),0);
+  // For other buckets, "spent" = sum of negative manual adjustments only
+  return bucketAdjustments.filter(a=>a.bucket===bucketKey&&a.amount<0).reduce((s,a)=>s+Math.abs(a.amount),0);
 }
 
 function fmt(n){
@@ -746,6 +894,7 @@ function fmtF(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
 
 // ── RENDER: DASHBOARD ──
 function renderDash(){
+  B=getBucketConfig();
   const arr=getARR(),cl=getClients(),mo=Math.round(arr/12);
   const infraMonthly=getInfraTier(cl).monthly;
   const mg=arr?Math.round(((arr-infraMonthly*12)/arr)*100):null;
@@ -805,6 +954,38 @@ function renderDash(){
 
 // ── TAX GRID ──
 function renderTaxGrid(){
+  const taxSection=document.getElementById('tax-section');
+  if(!isPvtLtd()){
+    // Sole proprietor stage — no advance tax deadlines apply. Show honest status instead.
+    if(taxSection){
+      taxSection.style.background='linear-gradient(135deg,#0a1400,#0a0a0a)';
+      taxSection.style.borderColor='#1a3a00';
+      taxSection.innerHTML=`
+        <div class="tc-label" style="color:var(--accent2)">
+          <svg viewBox="0 0 24 24" width="12" height="12" style="stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Sole Proprietor Stage — No Advance Tax Due
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7">
+          Your personal income is below the ₹12L threshold (new regime + Sec 87A rebate) — income tax liability is effectively ₹0. No GST registration yet (below ₹20L turnover). Advance tax deadlines activate only after Pvt Ltd incorporation or when personal draw crosses ₹12L.
+          <br><br>
+          <span style="color:var(--accent2);font-family:var(--fm);font-size:11px">Tax Reserve bucket (5%) is still running — pure habit-building, not a legal requirement yet.</span>
+        </div>`;
+    }
+    const sbTaxLabel=document.getElementById('sb-tax-label');
+    if(sbTaxLabel)sbTaxLabel.textContent='No tax due — Sole Prop';
+    return;
+  }
+  // Pvt Ltd stage — restore original card structure and render deadlines
+  if(taxSection){
+    taxSection.style.background='';
+    taxSection.style.borderColor='';
+    taxSection.innerHTML=`
+      <div class="tc-label">
+        <svg viewBox="0 0 24 24" width="12" height="12" style="stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Advance Tax Deadlines — click to mark paid
+      </div>
+      <div class="tc-grid" id="tax-grid"></div>`;
+  }
   const now=new Date();
   const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
   const fyStartYear=now.getMonth()>=3?now.getFullYear():now.getFullYear()-1;
@@ -846,7 +1027,63 @@ window.toggleTaxPaid=function(key){
   toast(taxPaid[key]?'Marked as paid ✓':'Marked as unpaid');
 };
 
+window.togglePhase=function(){
+  const goingToPvt=!isPvtLtd();
+  document.getElementById('phase-modal-title').textContent=goingToPvt?'Switch to Pvt Ltd stage?':'Switch back to Sole Proprietor?';
+  document.getElementById('phase-modal-body').textContent=goingToPvt
+    ? 'This activates the 25.17% tax reserve (Section 115BAA) and starts tracking advance tax deadlines. Only confirm this AFTER actual incorporation is complete — not before.'
+    : 'This drops the tax reserve back to 5% (habit-only) and hides advance tax deadlines. Use this if you incorrectly switched to Pvt Ltd, or reverted incorporation.';
+  document.getElementById('phase-modal').dataset.target=goingToPvt?'pvtltd':'sole';
+  document.getElementById('phase-modal').classList.add('show');
+};
+window.closePhaseModal=function(){document.getElementById('phase-modal').classList.remove('show')};
+window.confirmPhaseSwitch=function(){
+  const target=document.getElementById('phase-modal').dataset.target;
+  entityPhase=target;
+  save();
+  B=getBucketConfig();
+  renderAll();
+  closePhaseModal();
+  toast(`Switched to ${target==='pvtltd'?'Pvt Ltd':'Sole Proprietor'} stage.`);
+};
+function renderPhaseUI(){
+  const label=document.getElementById('phase-label');
+  const sub=document.getElementById('phase-sub');
+  const pill=document.getElementById('sb-tax-pill');
+  const banner=document.getElementById('phase-banner');
+  const bTitle=document.getElementById('phase-banner-title');
+  const bSub=document.getElementById('phase-banner-sub');
+  const bDot=document.getElementById('phase-banner-dot');
+  if(!label)return;
+  if(isPvtLtd()){
+    label.textContent='Pvt Ltd (Incorporated)';
+    label.style.color='var(--purple)';
+    sub.textContent='25.17% corporate tax active · Sec 115BAA';
+    if(pill)pill.style.display='flex';
+    if(banner){
+      banner.style.background='rgba(168,85,247,.06)';
+      banner.style.border='1px solid rgba(168,85,247,.25)';
+    }
+    if(bDot)bDot.style.background='var(--purple)';
+    if(bTitle){bTitle.textContent='Pvt Ltd Stage — Full compliance active';bTitle.style.color='var(--purple)'}
+    if(bSub)bSub.textContent='25.17% tax reserve (Sec 115BAA) · advance tax deadlines tracked · director salary rules apply';
+  } else {
+    label.textContent='Sole Proprietor';
+    label.style.color='var(--accent)';
+    sub.textContent='Tap after Pvt Ltd incorporation';
+    if(pill)pill.style.display='none';
+    if(banner){
+      banner.style.background='rgba(200,241,53,.06)';
+      banner.style.border='1px solid rgba(200,241,53,.25)';
+    }
+    if(bDot)bDot.style.background='var(--accent)';
+    if(bTitle){bTitle.textContent='Sole Proprietor Stage — Near-zero tax liability';bTitle.style.color='var(--accent)'}
+    if(bSub)bSub.textContent='No GST (below ₹20L) · no income tax (below ₹12L) · 5% tax bucket is habit-only';
+  }
+}
+
 function renderBuckets(){
+  B=getBucketConfig();
   const cum=cumulative();
   const cl=getClients();
   const arr=getARR();
@@ -872,10 +1109,13 @@ function renderBuckets(){
   const firstSetupAmt=hasFirstSetup?(payments.filter(p=>!p.isDryRun)[0].setup||0):0;
 
   bkg.innerHTML=B.map(b=>{
-    const amt=cum[b.k]||0;
+    const allocated=cum[b.k]||0;
+    const spent=getBucketSpentTotal(b.k);
+    const adj=getBucketAdjustmentTotal(b.k);
+    const net=getBucketNetBalance(b.k);
     const capHit=b.k==='emergency'&&emergCap;
-    const moNotional=Math.round(amt/12);
-    const fillPct=totalCash>0?Math.min(100,Math.round((amt/totalCash)*100)):0;
+    const moNotional=Math.round(net/12);
+    const fillPct=totalCash>0?Math.min(100,Math.round((allocated/totalCash)*100)):0;
     const pctLabel=b.k==='infra'?`${infraPct}% (tiered · ${infraTier.label})`:b.k==='personal'?`${personalPct}% (ARR-scaled)`:b.pct+'%';
 
     // First client special note for infra bucket
@@ -898,12 +1138,29 @@ function renderBuckets(){
     if(b.k==='service')extraBadge=`<div class="bkcap" style="background:#1a0010;color:#ec4899">Monthly drain ceiling: ${fmtF(SERVICE_MONTHLY_CEILING)} · beyond = billable</div>`;
     if(b.k==='personal'){const nt=PERSONAL_ARR_TIERS.find(t=>arr<t.maxARR&&arr>=t.minARR&&t.pct>personalPct);if(nt)extraBadge=`<div class="bkcap" style="background:#0e0017;color:#a855f7">Next tier ${nt.pct}% unlocks at ${fmt(nt.minARR)} ARR</div>`;}
 
+    // Allocated/Spent/Net breakdown — only show spent row if something's actually been spent/adjusted
+    const hasActivity=spent>0||adj!==0;
+    const breakdownHtml=hasActivity?`
+      <div style="display:flex;flex-direction:column;gap:3px;margin:8px 0;padding:8px;background:var(--bg2);border-radius:6px;font-family:var(--fm);font-size:10px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Allocated</span><span style="color:var(--text2)">${fmtF(allocated)}</span></div>
+        ${spent>0?`<div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Spent</span><span style="color:var(--red)">−${fmtF(spent)}</span></div>`:''}
+        ${adj!==0?`<div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Manual adj.</span><span style="color:${adj>0?'var(--green)':'var(--red)'}">${adj>0?'+':''}${fmtF(adj)}</span></div>`:''}
+        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:3px;margin-top:2px"><span style="color:var(--text2);font-weight:600">Net remaining</span><span style="color:${b.c};font-weight:600">${fmtF(net)}</span></div>
+      </div>`:'';
+
     return `<div class="bkc">
       <div class="bktop" style="background:${b.c}"></div>
-      <div class="bkl" style="color:${b.c}">${b.n}</div>
-      <div class="bkv">${fmtF(amt)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
+        <div class="bkl" style="color:${b.c}">${b.n}</div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button onclick="quickWithdraw('${b.k}')" style="background:none;border:1px solid var(--border);color:var(--text3);border-radius:4px;font-size:9px;padding:2px 7px;cursor:pointer;font-family:var(--fm)" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">− withdraw</button>
+          <button onclick="openAdjustModal('${b.k}')" style="background:none;border:1px solid var(--border);color:var(--text3);border-radius:4px;font-size:9px;padding:2px 7px;cursor:pointer;font-family:var(--fm)" onmouseover="this.style.borderColor='${b.c}';this.style.color='${b.c}'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">✎ adjust</button>
+        </div>
+      </div>
+      <div class="bkv">${fmtF(net)}</div>
       <div class="bkp">${pctLabel} of each payment${b.k==='reinvest'?' + client 2+ setup fees':''}</div>
       <div class="bk-monthly">${fmtF(moNotional)}/mo notional</div>
+      ${breakdownHtml}
 
       <!-- FILL BAR — width set directly so it shows even on hidden tab render -->
       <div style="margin:10px 0 6px">
@@ -948,6 +1205,122 @@ function renderReinvest(){
     </div>`;
   }).join('');
 }
+
+window.openAdjustModal=function(preselectBucket){
+  B=getBucketConfig();
+  const sel=document.getElementById('adj-bucket');
+  sel.innerHTML=B.map(b=>`<option value="${b.k}">${b.n}</option>`).join('');
+  if(preselectBucket)sel.value=preselectBucket;
+  document.getElementById('adj-amount').value='';
+  document.getElementById('adj-reason').value='';
+  document.getElementById('adj-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('adj-type').value='add';
+  renderAdjustHistory();
+  document.getElementById('adjust-modal').classList.add('show');
+};
+window.closeAdjustModal=function(){document.getElementById('adjust-modal').classList.remove('show')};
+
+// One-tap withdraw shortcut — pre-fills bucket + forces subtract mode + focuses amount.
+// This exists because a 5-field form gets skipped after week 2. This is 2 fields: amount, reason.
+window.quickWithdraw=function(bucketKey){
+  openAdjustModal(bucketKey);
+  document.getElementById('adj-type').value='subtract';
+  setTimeout(()=>document.getElementById('adj-amount').focus(),50);
+};
+
+window.submitAdjustment=function(){
+  const bucket=document.getElementById('adj-bucket').value;
+  const type=document.getElementById('adj-type').value;
+  let amount=parseFloat(document.getElementById('adj-amount').value)||0;
+  const reason=document.getElementById('adj-reason').value.trim();
+  const date=document.getElementById('adj-date').value;
+  if(!amount||amount<=0){toast('Enter a valid amount.');return}
+  if(!reason){toast('Add a reason — future you will thank you.');return}
+  if(type==='subtract')amount=-amount;
+  bucketAdjustments.push({bucket,amount,reason,date,ts:Date.now()});
+  save();
+  renderAll();
+  renderAdjustHistory();
+  document.getElementById('adj-amount').value='';
+  document.getElementById('adj-reason').value='';
+  toast(`${type==='add'?'Added':'Withdrew'} ${fmtF(Math.abs(amount))} ${type==='add'?'to':'from'} ${B.find(b=>b.k===bucket)?.n||bucket}.`);
+};
+
+function renderAdjustHistory(){
+  const bucket=document.getElementById('adj-bucket').value;
+  const relevant=bucketAdjustments.map((a,i)=>({...a,_idx:i})).filter(a=>a.bucket===bucket);
+  const container=document.getElementById('adj-history');
+  if(!relevant.length){container.innerHTML=`<div style="font-size:11px;color:var(--text3)">No manual adjustments logged for this bucket yet.</div>`;return}
+  container.innerHTML=`<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Adjustment history</div>`+
+    [...relevant].reverse().map(a=>{
+      const dt=a.date?new Date(a.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px">
+        <div><span style="color:${a.amount>0?'var(--green)':'var(--red)'};font-family:var(--fm);font-weight:600">${a.amount>0?'+':''}${fmtF(a.amount)}</span> <span style="color:var(--text3);margin-left:6px">${a.reason} · ${dt}</span></div>
+        <button onclick="deleteAdjustment(${a._idx})" style="background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:var(--fm)">delete</button>
+      </div>`;
+    }).join('');
+}
+document.getElementById('adj-bucket')?.addEventListener('change',renderAdjustHistory);
+
+window.deleteAdjustment=function(idx){
+  if(isNaN(idx)||idx<0||idx>=bucketAdjustments.length)return;
+  bucketAdjustments.splice(idx,1);
+  save();renderAll();renderAdjustHistory();
+  toast('Adjustment deleted.');
+};
+
+window.openAuditModal=function(){
+  B=getBucketConfig();
+  const {rows,finalTotals}=getAuditTrail();
+  const content=document.getElementById('audit-content');
+
+  if(!rows.length){
+    content.innerHTML=`<div class="ndm">No real payments logged yet. Audit populates once you log your first payment.</div>`;
+    document.getElementById('audit-modal').classList.add('show');
+    return;
+  }
+
+  // Final totals summary strip at top — shows NET balance (allocated + adjustments − spent), the real-world truth
+  const summaryHtml=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+    ${B.map(b=>{
+      const net=getBucketNetBalance(b.k);
+      const spent=getBucketSpentTotal(b.k);
+      const adj=getBucketAdjustmentTotal(b.k);
+      return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px">
+      <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">${b.n}</div>
+      <div style="font-family:var(--fm);font-size:14px;font-weight:600;color:${b.c}">${fmtF(net)}</div>
+      ${(spent>0||adj!==0)?`<div style="font-family:var(--fm);font-size:8px;color:var(--text3);margin-top:2px">${spent>0?`spent ${fmtF(spent)}`:''}${spent>0&&adj!==0?' · ':''}${adj!==0?`adj ${adj>0?'+':''}${fmtF(adj)}`:''}</div>`:''}
+    </div>`;
+    }).join('')}
+  </div>`;
+
+  // Per-payment breakdown, most recent first
+  const rowsHtml=[...rows].reverse().map((r,ri)=>{
+    const idx=rows.length-1-ri;
+    const dt=r.date?new Date(r.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    const total=r.acv+r.setup;
+    return `<div style="padding:1rem 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div>
+          <span style="font-size:13px;font-weight:700;color:var(--text)">${r.client}</span>
+          ${r.isFirstClient?'<span style="font-family:var(--fm);font-size:9px;color:var(--accent2);margin-left:6px">FIRST CLIENT</span>':''}
+        </div>
+        <div style="font-family:var(--fm);font-size:12px;color:var(--text2)">${fmtF(total)} · ${dt}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        ${B.map(b=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 8px;background:var(--bg2);border-radius:4px">
+          <span style="color:var(--text3)">${b.n.split(' ')[0]}</span>
+          <span style="font-family:var(--fm);color:${b.c};font-weight:600">${fmtF(r.alloc[b.k]||0)}</span>
+        </div>`).join('')}
+      </div>
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:8px">Running total after this payment: ${B.map(b=>`${b.n.split(' ')[0]} ${fmtF(r.runningAfter[b.k]||0)}`).join(' · ')}</div>
+    </div>`;
+  }).join('');
+
+  content.innerHTML=summaryHtml+rowsHtml;
+  document.getElementById('audit-modal').classList.add('show');
+};
+window.closeAuditModal=function(){document.getElementById('audit-modal').classList.remove('show')};
 
 window.openReinvestModal=function(){
   document.getElementById('ri-modal').classList.add('show');
@@ -1040,7 +1413,7 @@ window.toggleCheck=function(id){pvtChecks[id]=!pvtChecks[id];save();renderPvtLtd
 
 // ── RENDER: RULES ──
 function renderRules(){
-  document.getElementById('rules-list').innerHTML=RULES.map(r=>`
+  document.getElementById('rules-list').innerHTML=getRules().map(r=>`
     <div class="rc">
       <div class="ri-icon" style="background:${r.ic};color:${r.c}"><svg viewBox="0 0 24 24">${r.icon}</svg></div>
       <div><div class="rtt">${r.t}</div><div class="rtd">${r.d}</div></div>
@@ -1335,6 +1708,7 @@ window.del=function(btn){
 
 // ── PREVIEW ──
 window.preview=function(){
+  B=getBucketConfig();
   const p=getActivePricing();
   const overrideVal=document.getElementById('l-override')?.value;
   let setup=p.setup,acv=p.acv;
@@ -1397,6 +1771,7 @@ window.importData=function(e){
 
 // ── RENDER ALL ──
 function renderAll(){
+  renderPhaseUI();
   renderDash();renderBuckets();renderHistory();renderReinvest();renderChurn();renderPvtLtd();renderRules();
   const hasReal=payments.some(p=>!p.isDryRun);
   const banner=document.getElementById('dryrun-banner');
