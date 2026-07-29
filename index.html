@@ -348,7 +348,7 @@ body{display:flex;min-height:100vh}
       <div class="ph"><span class="pt">Growth Phases</span><span class="ps">₹925Cr roadmap · based on actual pricing</span></div>
       <div class="pht">
         <div class="phi"><div class="phd" id="pd0"></div><div class="phl">Right now</div><div class="phn">Land clients 1–5</div><div class="phdt">P2 Lite ₹64K day-1 (₹44K/yr Y2+) · P1 Lite same. CA referral → one-pager → live demo. Each client = ₹44K ARR recurring forever.</div><div class="phtg">Target: 5 paying · ₹2.2L ARR</div></div>
-        <div class="phi"><div class="phd" id="pd1"></div><div class="phl">Phase 1 · Yrs 1–2</div><div class="phn">MIDC Satara dominance</div><div class="phdt">30–50 clients. Mix of Lite ₹44K + Pro ₹70K + Enterprise ₹1.14L. 50 Lite-all = ₹22L ARR Y2+. Upsell existing base to Pro/Enterprise.</div><div class="phtg">Target: ₹25L ARR</div></div>
+        <div class="phi"><div class="phd" id="pd1"></div><div class="phl">Phase 1 · Yrs 1–2</div><div class="phn">MIDC Satara dominance</div><div class="phdt">30–50 clients. Mix of Lite ₹44K + Pro ₹80K + Enterprise ₹1.60L. 50 Lite-all = ₹22L ARR Y2+. Upsell existing base to Pro/Enterprise.</div><div class="phtg">Target: ₹25L ARR</div></div>
         <div class="phi"><div class="phd" id="pd2"></div><div class="phl">Phase 2 · Yrs 3–5</div><div class="phn">Multi-MIDC expansion</div><div class="phdt">Pune · Nashik · Aurangabad MIDCs. First sales hire from reinvestment bucket. Compliance Tracker add-on. 150+ clients at blended ₹60K ARR = ₹90L ARR.</div><div class="phtg">Target: ₹2Cr ARR</div></div>
         <div class="phi"><div class="phd" id="pd3"></div><div class="phn">UK &amp; global arbitrage</div><div class="phl">Phase 3 · Yrs 6–10</div><div class="phdt">Same product · £800–1,200/mo per client. 500 UK clients @ £1K = £6M ARR (~₹63Cr). 10–15x PE multiple on SaaS revenue.</div><div class="phtg">Target: ₹925Cr exit</div></div>
       </div>
@@ -496,7 +496,7 @@ body{display:flex;min-height:100vh}
     </div>
     <div class="panel" style="background:linear-gradient(135deg,#1a0000,#0a0a0a);border-color:#2a0000">
       <div class="pt" style="color:var(--red);margin-bottom:.75rem">The Year 2 Revenue Drop</div>
-      <div style="font-size:12px;color:var(--text3);line-height:1.65">Every churned client doesn't just cost you one year — it costs every renewal year after. At Lite (₹44K/yr Y2+), one churn = ₹44K lost annually. At Pro (₹70K/yr), one churn = ₹70K/yr gone forever. Year 2 revenue already drops 31–34% as setup fees disappear. Churn on top compounds the damage. The only defence is obsessive retention.</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.65">Every churned client doesn't just cost you one year — it costs every renewal year after. At Lite (₹44K/yr Y2+), one churn = ₹44K lost annually. At Pro (₹80K/yr), one churn = ₹80K/yr gone forever. Year 2 revenue already drops 31–34% as setup fees disappear. Churn on top compounds the damage. The only defence is obsessive retention.</div>
     </div>
   </section>
 
@@ -512,10 +512,10 @@ body{display:flex;min-height:100vh}
         <label class="fl">Product / tier</label>
         <select class="fi" id="ch-product">
           <option value="p2_lite">P2 Lite (₹44K/yr)</option>
-          <option value="p2_pro">P2 Pro (₹70K/yr)</option>
+          <option value="p2_pro">P2 Pro (₹80K/yr)</option>
           <option value="p1_lite">P1 Basic (₹44K/yr)</option>
-          <option value="p1_pro">P1 Pro (₹70K/yr)</option>
-          <option value="ent">Enterprise (₹1.14L/yr)</option>
+          <option value="p1_pro">P1 Pro (₹80K/yr)</option>
+          <option value="ent">Enterprise (₹1.60L/yr)</option>
         </select>
       </div>
       <div class="fg"><label class="fl">Churn date</label><input type="date" class="fi" id="ch-date"/></div>
@@ -708,10 +708,10 @@ function getRules(){
 // acv already includes AMC (AMC is baked into the annual figure).
 const PRICING={
   p2_lite: {setup:20000,acv:44000,b1:'Setup ₹20K (once) + ₹40K subscription + ₹4K AMC = ₹64K day-1',b2:'₹40K subscription + ₹4K AMC = ₹44K/yr'},
-  p2_pro:  {setup:35000,acv:70000,b1:'Setup ₹35K (once) + ₹66K subscription + ₹4K AMC = ₹1.05L day-1',b2:'₹66K subscription + ₹4K AMC = ₹70K/yr'},
+  p2_pro:  {setup:35000,acv:80000,b1:'Setup ₹35K (once) + ₹76K subscription + ₹4K AMC = ₹1.15L day-1',b2:'₹76K subscription + ₹4K AMC = ₹80K/yr'},
   p1_lite: {setup:20000,acv:44000,b1:'Setup ₹20K (once) + ₹40K subscription + ₹4K AMC = ₹64K day-1',b2:'₹40K subscription + ₹4K AMC = ₹44K/yr'},
-  p1_pro:  {setup:35000,acv:70000,b1:'Setup ₹35K (once) + ₹66K subscription + ₹4K AMC = ₹1.05L day-1',b2:'₹66K subscription + ₹4K AMC = ₹70K/yr'},
-  ent_lite:{setup:55000,acv:114000,b1:'Setup ₹55K (once) + ₹1.08L subscription + ₹6K AMC = ₹1.73L day-1',b2:'₹1.08L subscription + ₹6K AMC = ₹1.14L/yr'},
+  p1_pro:  {setup:35000,acv:80000,b1:'Setup ₹35K (once) + ₹76K subscription + ₹4K AMC = ₹1.15L day-1',b2:'₹76K subscription + ₹4K AMC = ₹80K/yr'},
+  ent_lite:{setup:55000,acv:160000,b1:'Setup ₹55K (once) + ₹1.54L subscription + ₹6K AMC = ₹2.15L day-1',b2:'₹1.54L subscription + ₹6K AMC = ₹1.60L/yr'},
 };
 
 function getPricingKey(){
@@ -1421,7 +1421,7 @@ function renderRules(){
 }
 
 // ── CHURN ──
-const CHURN_ACV={p2_lite:44000,p2_pro:70000,p1_lite:44000,p1_pro:70000,ent:114000};
+const CHURN_ACV={p2_lite:44000,p2_pro:80000,p1_lite:44000,p1_pro:80000,ent:160000};
 const CHURN_LABELS={p2_lite:'P2 Lite',p2_pro:'P2 Pro',p1_lite:'P1 Basic',p1_pro:'P1 Pro',ent:'Enterprise'};
 const CHURN_REASON_LABELS={price:'Price',product:'Product gap',competitor:'Competitor',closure:'Biz closed',support:'Support',other:'Other'};
 
